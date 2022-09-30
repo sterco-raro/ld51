@@ -20,6 +20,10 @@ PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
 GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "graphics")
 
 SPRITE_UNKNOWN 	= "unknown.png"
+SPRITE_CLOUD 	= "cloud.png"
+SPRITE_FLOOR 	= "floor.png"
+SPRITE_WALL 	= "wall.png"
+SPRITE_WATER 	= "water.png"
 
 # Window
 WINDOW_TITLE = GAME_NAME
