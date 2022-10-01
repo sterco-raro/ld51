@@ -89,10 +89,10 @@ class WorldManager():
 			self.current = name
 			esper.dispatch_event("scene_change", name)
 
-	def update(self, dt):
+	def update(self):
 		"""Process currently active world"""
 		if self.current:
-			self.worlds[self.current].process(dt)
+			self.worlds[self.current].process()
 
 	def quit(self):
 		"""Destroy loaded worlds"""

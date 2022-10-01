@@ -3,7 +3,7 @@ import pathlib
 import pygame
 
 # General
-GAME_NAME 		= "LD51"
+GAME_NAME 		= "LD 51"
 GAME_VERSION 	= "0.1"
 
 FPS_LIMIT 			= 60.0
@@ -19,11 +19,37 @@ PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
 # Resources
 GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "graphics")
 
-SPRITE_UNKNOWN 	= "unknown.png"
-SPRITE_CLOUD 	= "cloud.png"
-SPRITE_FLOOR 	= "floor.png"
-SPRITE_WALL 	= "wall.png"
-SPRITE_WATER 	= "water.png"
+SPRITE_UNKNOWN 				= "unknown.png"
+SPRITE_CURSOR 				= "menu_cursor.png"
+SPRITE_PIPE_CROSS 			= "pipes/cross.png"
+SPRITE_PIPE_VERTICAL 		= "pipes/vertical.png"
+SPRITE_PIPE_HORIZONTAL 		= "pipes/horizontal.png"
+SPRITE_PIPE_INPUT 			= "pipes/output_orange.png"
+SPRITE_PIPE_OUTPUT 			= "pipes/input_orange.png"
+SPRITE_PIPE_BENT_LEFT_UP 	= "pipes/bent_left_up.png"
+SPRITE_PIPE_BENT_LEFT_DOWN 	= "pipes/bent_left_down.png"
+SPRITE_PIPE_BENT_RIGHT_UP 	= "pipes/bent_right_up.png"
+SPRITE_PIPE_BENT_RIGHT_DOWN	= "pipes/bent_right_down.png"
+SPRITE_PIPE_T_LEFT 			= "pipes/t_left.png"
+SPRITE_PIPE_T_RIGHT 		= "pipes/t_right.png"
+SPRITE_PIPE_T_UP 			= "pipes/t_up.png"
+SPRITE_PIPE_T_DOWN 			= "pipes/t_down.png"
+
+PIPES = {
+	"0": 	{ "sprite": SPRITE_PIPE_INPUT, 			"left": False, 	"right": False, "up": False, "down": True, "fixed": True },
+	"1": 	{ "sprite": SPRITE_PIPE_OUTPUT, 		"left": False, 	"right": False, "up": True,  "down": False, "fixed": True },
+	"2": 	{ "sprite": SPRITE_PIPE_VERTICAL, 		"left": False, 	"right": False, "up": True,  "down": True, "fixed": False },
+	"3": 	{ "sprite": SPRITE_PIPE_HORIZONTAL, 	"left": True, 	"right": True, 	"up": False, "down": False, "fixed": False },
+	"4": 	{ "sprite": SPRITE_PIPE_BENT_LEFT_UP, 	"left": True, 	"right": False, "up": True,  "down": False, "fixed": False },
+	"5": 	{ "sprite": SPRITE_PIPE_BENT_LEFT_DOWN, "left": True, 	"right": False, "up": False, "down": True, "fixed": False },
+	"6": 	{ "sprite": SPRITE_PIPE_BENT_RIGHT_UP, 	"left": False, 	"right": True, 	"up": True,  "down": False, "fixed": False },
+	"7": 	{ "sprite": SPRITE_PIPE_BENT_RIGHT_DOWN,"left": False, 	"right": True, 	"up": False, "down": True, "fixed": False },
+	"8": 	{ "sprite": SPRITE_PIPE_T_LEFT, 		"left": True, 	"right": False, "up": True,  "down": True, "fixed": False },
+	"9": 	{ "sprite": SPRITE_PIPE_T_RIGHT, 		"left": False, 	"right": True, 	"up": True,  "down": True, "fixed": False },
+	"10": 	{ "sprite": SPRITE_PIPE_T_UP, 			"left": True, 	"right": True, 	"up": True,  "down": False, "fixed": False },
+	"11": 	{ "sprite": SPRITE_PIPE_T_DOWN, 		"left": True, 	"right": True, 	"up": False, "down": True, "fixed": False },
+	"12": 	{ "sprite": SPRITE_PIPE_CROSS, 			"left": True, 	"right": True, 	"up": True,  "down": True, "fixed": False },
+}
 
 # Window
 WINDOW_TITLE = GAME_NAME
@@ -35,7 +61,7 @@ VIEWPORT_WIDTH 	= SCREEN_WIDTH
 VIEWPORT_HEIGHT = SCREEN_HEIGHT
 
 # Map
-TILE_SIZE = 48
+TILE_SIZE = 64
 
 # Physics
 VECTOR_ZERO 			= pygame.Vector2(0, 0)

@@ -17,6 +17,13 @@ class Timer():
     def active(self):
         return self._active
 
+    @property
+    def value(self):
+        """Return current timer value in seconds"""
+        if not self.active:
+            return 0
+        return ( get_ticks() - self.start_time ) // 1000
+
     def activate(self):
         self._active = True
         self.start_time = get_ticks()

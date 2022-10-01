@@ -23,7 +23,6 @@ class GameManager():
 		self.collisions 	= True 	# Collision detection
 
 		self.target_fps 	= FPS_LIMIT
-		self.fixed_dt 		= FIXED_DELTA_TIME
 		self.screen_flags 	= SCREEN_MODE_FLAGS
 
 		# Register event handlers
@@ -44,7 +43,7 @@ class GameManager():
 		"""Quick and dirty splash screen"""
 
 		# A warm, welcoming message
-		message = "Pippo Baudo non esiste"
+		message = "Birds aren't real, I promise"
 		font = pygame.font.SysFont(None, 64)
 		font_size = font.size(message)
 
@@ -110,11 +109,6 @@ class GameManager():
 					self.debug = not self.debug
 					esper.dispatch_event("toggle_debug", self.debug)
 
-				# Toggle collision systems
-				if ev.key == pygame.K_c:
-					self.collisions = not self.collisions
-					esper.dispatch_event("toggle_collisions", self.collisions)
-
 				# Reset world manager
 				if ev.key == pygame.K_0:
 					self.world.reset()
@@ -145,7 +139,7 @@ class GameManager():
 			self.handle_events(pygame.event.get())
 
 			# Update current level
-			self.world.update(self.fixed_dt)
+			self.world.update()
 
 			# Display updates
 			self.clock.tick(self.target_fps)

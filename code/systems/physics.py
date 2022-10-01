@@ -92,7 +92,6 @@ class PhysicsSimulation(Processor):
 
 		return True
 
-	@exectime
 	def process(self, dt):
 		# Get map component
 		if not self.tilemap:

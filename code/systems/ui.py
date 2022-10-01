@@ -19,7 +19,7 @@ class MenuInputHandler(esper.Processor):
 		# MenuRendering system
 		self.rendering = None
 
-	def process(self, dt):
+	def process(self):
 		# Get the MenuRendering reference
 		if not self.rendering:
 			self.rendering = self.world.get_processor(MenuRendering)
@@ -101,7 +101,7 @@ class MenuRendering(esper.Processor):
 		for ent, text in self.world.get_component(UiText):
 			self.surface.blit(text.surface, text.rect)
 
-	def process(self, dt):
+	def process(self):
 		# Render the menu
 		if self.redraw_ui: self.reset()
 

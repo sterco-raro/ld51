@@ -2,88 +2,100 @@ import random
 import pygame # TODO Only import necessary variables/functions/classes
 from copy 	import deepcopy
 from esper 	import Processor
-from code.components.controller import PlayerController
-from code.components.physics 	import PhysicsBody
-from code.components.sprite 	import AnimatedSprite
-from code.settings import (
-	ANIM_DURATION_EXPLOSION,
-	ANIM_SPEED_EXPLOSION,
-	ANIM_TABLE_EXPLOSION,
-	RENDERING_LAYERS,
-)
+from code.settings 			import *
+from code.timer 			import *
+from code.components.cursor import *
+from code.components.map 	import *
+from code.systems.rendering import *
 
 
 # -------------------------------------------------------------------------------------------------
 
 
-class InputHandler(Processor):
-	"""Player controls management: movement, actions, animation status, etc."""
+class MouseInputHandler(Processor):
+	"""Cursor movement, pipes selection and placement, ..."""
 
-	def _test_spawn_explosion(self, position):
-		"""Create an explosion with random dimensions centered at @position"""
+	def __init__(self, scene_name, cursor_entity, deck_area, grid_area):
+		self.scene_name = scene_name
+		self.cursor_entity = cursor_entity
+		self.deck_area = deck_area
+		self.grid_area = grid_area
 
-		explosion = self.world.create_entity()
+		# Mouse Cursor component
+		self.cursor = None
+		# MenuRendering system
+		self.rendering = None
 
-		scale = random.randint(48, 256)
-		spawn = position
+		# Currently selected entity
+		self.selected = -1
 
-		sprite = AnimatedSprite(	duration = ANIM_DURATION_EXPLOSION,
-									folder = "explosions",
-									frames_table = deepcopy( ANIM_TABLE_EXPLOSION ),
-									layer = RENDERING_LAYERS["main"],
-									scale_size = ( scale, scale ),
-									spawn_point = spawn,
-									speed = ANIM_SPEED_EXPLOSION )
+		# Actions cooldown
+		self.actions_cooldown = Timer( duration = 100 )
 
-		self.world.add_component( explosion, sprite )
+	def handle_deck_input(self):
+		"""Process user input on the deck"""
+		collision = False
+		mouse_left = False
+		for ent, (button, item) in self.world.get_components( UiButton, UiItem ):
 
-	def process(self, dt):
-		pressed = pygame.key.get_pressed()
-		for ent, (body, ctrl, sprite) in self.world.get_components(PhysicsBody, PlayerController, AnimatedSprite):
+			collision = item.rect.collidepoint( self.cursor.rect.center )
+			mouse_left, _, __ = pygame.mouse.get_pressed()
 
-			# Skip inactive controllers
-			if not ctrl.active: continue
+			# Check button state for hovering effect (only on basic fill-buttons)
+			if (
+				not button.image 					and
+				(not button.hovering and collision) or
+				(button.hovering and not collision)
+			):
+				button.hovering = not button.hovering
 
-			# Update timers and cooldowns
-			ctrl.update()
+			if not self.actions_cooldown.active and collision and mouse_left:
+				item.callback()
+				self.actions_cooldown.activate()
 
-			# Reset movement direction
-			body.direction = pygame.Vector2(0, 0)
+	def handle_grid_input(self):
+		"""Process user input on the grid"""
+		mouse_left = False
+		mouse_right = False
+		for ent, sprite in self.world.get_component( Pipe ):
 
-			# Update direction based on user input
-			if pressed[pygame.K_w] or pressed[pygame.K_UP]: 	body.direction += (0, -1)
-			if pressed[pygame.K_s] or pressed[pygame.K_DOWN]: 	body.direction += (0,  1)
-			if pressed[pygame.K_a] or pressed[pygame.K_LEFT]: 	body.direction += (-1, 0)
-			if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]: 	body.direction += ( 1, 0)
+			# Mouse buttons state
+			mouse_left, _, mouse_right = pygame.mouse.get_pressed()
 
-			# Spawn a "bomb" (explosion with usage cooldown)
-			if not ctrl.cooldowns["bomb"].active:
-				if pressed[pygame.K_n]:
-					self._test_spawn_explosion(body.position)
-					ctrl.cooldowns["bomb"].activate()
+			# Skip input/output sprites
+			if sprite.fixed: continue
 
-			# Continuously spawn explosions
-			if pressed[pygame.K_b]:
-				self._test_spawn_explosion(body.position)
+			# Mouse is colliding with the current sprite
+			if not self.actions_cooldown.active and sprite.rect.collidepoint( self.cursor.rect.center ):
+				# Mouse action: select
+				if mouse_left and (self.selected == -1 or self.selected == ent):
+					sprite.selected = not sprite.selected
+					self.selected = ent if sprite.selected else -1
+					self.actions_cooldown.activate()
 
-			# Test "hurt" animation
-			if not ctrl.timers["hurt"].active:
-				if pressed[pygame.K_h]:
-					sprite.status = "hurt"
-					sprite.frame_index = 0
-					ctrl.timers["hurt"].activate()
-					continue
+				# Mouse action: rotate
+				if mouse_right:
+					sprite.rotate()
+					self.actions_cooldown.activate()
 
-			# Attack animation (cannot attack while getting hurt)
-			if not ctrl.timers["kick"].active and not ctrl.timers["hurt"].active:
-				if pressed[pygame.K_m]:
-					sprite.status = "kick"
-					sprite.frame_index = 0
-					ctrl.timers["kick"].activate()
-					continue
+	def process(self):
+		# Get the MenuRendering reference
+		if not self.rendering:
+			self.rendering = self.world.get_processor( Rendering )
+		# Get the cursor component
+		if not self.cursor:
+			self.cursor = self.world.component_for_entity( self.cursor_entity, Cursor )
 
-			# When no other animations have been activated, default to "idle" or "moving"
-			if not ctrl.timers_active:
-				# Update movement status
-				if body.direction == (0, 0): 	sprite.status = "idle"
-				else: 							sprite.status = "moving"
+		# Update cooldowns
+		self.actions_cooldown.update()
+
+		# Update cursor position
+		self.cursor.rect.center = pygame.mouse.get_pos()
+
+		# Handle deck input
+		if self.deck_area.collidepoint( self.cursor.rect.center ):
+			self.handle_deck_input()
+
+		# Handle grid input
+		elif self.grid_area.collidepoint( self.cursor.rect.center ):
+			self.handle_grid_input()
