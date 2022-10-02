@@ -20,6 +20,10 @@ class Deck:
 		self.height 		= self.deck_height * TILE_SIZE
 		self.padding 		= TILE_SIZE
 
+		# Sections rectangles for rendering and input purposes
+		self.area = pygame.Rect( self.offset_x, self.offset_y, self.width, self.height )
+		self.interactable_area = self.area
+
 		self.current_hand = [] 	# Current cards entities
 		self.hand_length = 5 	# How many cards are shown with a new hand
 
@@ -54,6 +58,7 @@ class Deck:
 
 			sprite = Pipe( 	file_name = data["sprite"],
 							spawn_point = spawn_point,
+							pipe_id = data["id"],
 							left = data["left"],
 							right = data["right"],
 							up = data["up"],
@@ -63,3 +68,6 @@ class Deck:
 			world.add_component( pipe, sprite )
 			self.current_hand.append( pipe )
 
+	def remove(self, entity):
+		if entity in self.current_hand:
+			self.current_hand.remove( entity )

@@ -19,7 +19,7 @@ class GameManager():
 		self.world 			= None	# WorldManager instance
 
 		self.running 		= False	# Game loop state
-		self.debug 			= False # Manager debug state
+		self.debug 			= DEBUG # Manager debug state
 		self.collisions 	= True 	# Collision detection
 
 		self.target_fps 	= FPS_LIMIT

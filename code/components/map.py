@@ -16,6 +16,7 @@ class Pipe(StaticSprite):
 		scale_size 	= (64, 64),
 		spawn_point = (-1024, -1024),
 		debug_color = MAP_TILE_DEBUG_COLOR,
+		pipe_id 	= PIPE_VERTICAL,
 		left = True, right = True, up = False, down = False,
 		leftMale = False, rightMale = True, upMale = False, downMale = False,
 		fixed = False
@@ -27,6 +28,7 @@ class Pipe(StaticSprite):
 			spawn_point = spawn_point,
 			debug_color = debug_color
 		)
+		self.pipe_id 	= pipe_id
 		self.left 		= left
 		self.leftMale 	= leftMale
 		self.right 		= right
@@ -65,8 +67,15 @@ class PipeMap:
 		self.offset_y 	= offset_y
 
 		# Pixel dimensions
-		self.world_width 	= self.map_width * TILE_SIZE
-		self.world_height 	= self.map_height * TILE_SIZE
+		self.width 	= self.map_width * TILE_SIZE
+		self.height = self.map_height * TILE_SIZE
+
+		# Sections rectangles for rendering and input purposes
+		self.area = pygame.Rect( self.offset_x, self.offset_y, self.width, self.height )
+		self.interactable_area = pygame.Rect( 	self.offset_x + TILE_SIZE,
+												self.offset_y + TILE_SIZE,
+												self.width - 2 * TILE_SIZE,
+												self.height - 2 * TILE_SIZE )
 
 		# Map data
 		self.level = []
@@ -80,8 +89,24 @@ class PipeMap:
 			for col in range(self.map_width):
 				self.level[row].append("-1")
 
-	def get_at(self, row, col):
+	def _get_at(self, row, col):
 		if col < 0 or col > self.map_width: return
 		if row < 0 or row > self.map_height: return
 
-		return self.level[row][col]
+		return self.level[col][row]
+
+	def _set_at(self, row, col, value):
+		if col < 0 or col > self.map_width: return
+		if row < 0 or row > self.map_height: return
+
+		self.level[col][row] = value
+
+	def get(self, pos):
+		row = pos[0] // TILE_SIZE - self.offset_x // TILE_SIZE
+		col = pos[1] // TILE_SIZE - self.offset_y // TILE_SIZE
+		return self._get_at(row, col)
+
+	def set(self, pos, value):
+		row = pos[0] // TILE_SIZE - self.offset_x // TILE_SIZE
+		col = pos[1] // TILE_SIZE - self.offset_y // TILE_SIZE
+		self._set_at(row, col, value)

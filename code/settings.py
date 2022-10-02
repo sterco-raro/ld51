@@ -2,6 +2,8 @@ import os
 import pathlib
 import pygame
 
+DEBUG = True
+
 # General
 GAME_NAME 		= "LD 51"
 GAME_VERSION 	= "0.1"
@@ -35,33 +37,53 @@ SPRITE_PIPE_T_RIGHT 		= "pipes/t_right.png"
 SPRITE_PIPE_T_UP 			= "pipes/t_up.png"
 SPRITE_PIPE_T_DOWN 			= "pipes/t_down.png"
 
+PIPE_INPUT 				= "0"
+PIPE_OUTPUT 			= "1"
+PIPE_VERTICAL 			= "2"
+PIPE_HORIZONTAL 		= "3"
+PIPE_BENT_LEFT_UP 		= "4"
+PIPE_BENT_LEFT_DOWN 	= "5"
+PIPE_BENT_RIGHT_UP 		= "6"
+PIPE_BENT_RIGHT_DOWN 	= "7"
+PIPE_T_LEFT 			= "8"
+PIPE_T_RIGHT 			= "9"
+PIPE_T_UP 				= "10"
+PIPE_T_DOWN 			= "11"
+PIPE_CROSS 				= "12"
+
 PIPES = {
-	"0": 	{ "sprite": SPRITE_PIPE_INPUT, 			"left": False, 	"right": False, "up": False, "down": True, "fixed": True },
-	"1": 	{ "sprite": SPRITE_PIPE_OUTPUT, 		"left": False, 	"right": False, "up": True,  "down": False, "fixed": True },
-	"2": 	{ "sprite": SPRITE_PIPE_VERTICAL, 		"left": False, 	"right": False, "up": True,  "down": True, "fixed": False },
-	"3": 	{ "sprite": SPRITE_PIPE_HORIZONTAL, 	"left": True, 	"right": True, 	"up": False, "down": False, "fixed": False },
-	"4": 	{ "sprite": SPRITE_PIPE_BENT_LEFT_UP, 	"left": True, 	"right": False, "up": True,  "down": False, "fixed": False },
-	"5": 	{ "sprite": SPRITE_PIPE_BENT_LEFT_DOWN, "left": True, 	"right": False, "up": False, "down": True, "fixed": False },
-	"6": 	{ "sprite": SPRITE_PIPE_BENT_RIGHT_UP, 	"left": False, 	"right": True, 	"up": True,  "down": False, "fixed": False },
-	"7": 	{ "sprite": SPRITE_PIPE_BENT_RIGHT_DOWN,"left": False, 	"right": True, 	"up": False, "down": True, "fixed": False },
-	"8": 	{ "sprite": SPRITE_PIPE_T_LEFT, 		"left": True, 	"right": False, "up": True,  "down": True, "fixed": False },
-	"9": 	{ "sprite": SPRITE_PIPE_T_RIGHT, 		"left": False, 	"right": True, 	"up": True,  "down": True, "fixed": False },
-	"10": 	{ "sprite": SPRITE_PIPE_T_UP, 			"left": True, 	"right": True, 	"up": True,  "down": False, "fixed": False },
-	"11": 	{ "sprite": SPRITE_PIPE_T_DOWN, 		"left": True, 	"right": True, 	"up": False, "down": True, "fixed": False },
-	"12": 	{ "sprite": SPRITE_PIPE_CROSS, 			"left": True, 	"right": True, 	"up": True,  "down": True, "fixed": False },
+	PIPE_INPUT: 			{ "id": PIPE_INPUT, "sprite": SPRITE_PIPE_INPUT, 			"left": False, 	"right": False, "up": False, "down": True, "fixed": True },
+	PIPE_OUTPUT: 			{ "id": PIPE_OUTPUT, "sprite": SPRITE_PIPE_OUTPUT, 		"left": False, 	"right": False, "up": True,  "down": False, "fixed": True },
+	PIPE_VERTICAL: 			{ "id": PIPE_VERTICAL, "sprite": SPRITE_PIPE_VERTICAL, 		"left": False, 	"right": False, "up": True,  "down": True, "fixed": False },
+	PIPE_HORIZONTAL: 		{ "id": PIPE_HORIZONTAL, "sprite": SPRITE_PIPE_HORIZONTAL, 	"left": True, 	"right": True, 	"up": False, "down": False, "fixed": False },
+	PIPE_BENT_LEFT_UP: 		{ "id": PIPE_BENT_LEFT_UP, "sprite": SPRITE_PIPE_BENT_LEFT_UP, 	"left": True, 	"right": False, "up": True,  "down": False, "fixed": False },
+	PIPE_BENT_LEFT_DOWN: 	{ "id": PIPE_BENT_LEFT_DOWN, "sprite": SPRITE_PIPE_BENT_LEFT_DOWN, "left": True, 	"right": False, "up": False, "down": True, "fixed": False },
+	PIPE_BENT_RIGHT_UP: 	{ "id": PIPE_BENT_RIGHT_UP, "sprite": SPRITE_PIPE_BENT_RIGHT_UP, 	"left": False, 	"right": True, 	"up": True,  "down": False, "fixed": False },
+	PIPE_BENT_RIGHT_DOWN: 	{ "id": PIPE_BENT_RIGHT_DOWN, "sprite": SPRITE_PIPE_BENT_RIGHT_DOWN,"left": False, 	"right": True, 	"up": False, "down": True, "fixed": False },
+	PIPE_T_LEFT: 			{ "id": PIPE_T_LEFT, "sprite": SPRITE_PIPE_T_LEFT, 		"left": True, 	"right": False, "up": True,  "down": True, "fixed": False },
+	PIPE_T_RIGHT: 			{ "id": PIPE_T_RIGHT, "sprite": SPRITE_PIPE_T_RIGHT, 		"left": False, 	"right": True, 	"up": True,  "down": True, "fixed": False },
+	PIPE_T_UP: 				{ "id": PIPE_T_UP, "sprite": SPRITE_PIPE_T_UP, 			"left": True, 	"right": True, 	"up": True,  "down": False, "fixed": False },
+	PIPE_T_DOWN: 			{ "id": PIPE_T_DOWN, "sprite": SPRITE_PIPE_T_DOWN, 		"left": True, 	"right": True, 	"up": False, "down": True, "fixed": False },
+	PIPE_CROSS: 			{ "id": PIPE_CROSS, "sprite": SPRITE_PIPE_CROSS, 			"left": True, 	"right": True, 	"up": True,  "down": True, "fixed": False },
 }
 
 # Window
 WINDOW_TITLE = GAME_NAME
 
-SCREEN_WIDTH 	= 1280
-SCREEN_HEIGHT 	= 720
+SCREEN_WIDTH 	= 832
+SCREEN_HEIGHT 	= 576
 
 VIEWPORT_WIDTH 	= SCREEN_WIDTH
 VIEWPORT_HEIGHT = SCREEN_HEIGHT
 
 # Map
 TILE_SIZE = 64
+
+DECK_WIDTH 	= 3
+DECK_HEIGHT = 9
+
+GRID_WIDTH 	= 10
+GRID_HEIGHT = 9
 
 # Physics
 VECTOR_ZERO 			= pygame.Vector2(0, 0)
