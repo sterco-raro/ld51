@@ -1,6 +1,7 @@
-from esper 	import Processor
+from esper 	import Processor, dispatch_event
 from code.settings 			import *
 from code.timer 			import *
+from code.components.deck 	import *
 
 
 # -------------------------------------------------------------------------------------------------
@@ -17,16 +18,16 @@ class TimerController(Processor):
 		self.timer = None
 
 		# End timer cooldown
-		self.cooldown = Timer( 2000 )
+		self.cooldown = Timer( 1000 )
 
 	def process(self):
-		# Get timer component
 		if not self.timer:
 			self.timer = self.world.component_for_entity(self.timer_entity, Timer)
 
 		# Activate a small cooldown to handle events when the timer has reached its end
 		if self.timer.value >= 10:
 			self.cooldown.activate()
+			# TODO Launch pipe system check
 
 		# Update timers
 		self.timer.update()
@@ -36,3 +37,4 @@ class TimerController(Processor):
 		if not self.cooldown.active:
 			if not self.timer.active:
 				self.timer.activate()
+				dispatch_event("reset_deck_hand")

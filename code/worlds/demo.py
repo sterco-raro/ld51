@@ -20,10 +20,8 @@ def create_grid(world, grid_width, grid_height):
 	tilemap = world.create_entity()
 
 	# Components
-	margin_x = TILE_SIZE
-	margin_y = TILE_SIZE
-	offset_x = SCREEN_WIDTH - grid_width * TILE_SIZE - margin_x
-	offset_y = 0 + margin_y
+	offset_x = DECK_WIDTH * TILE_SIZE
+	offset_y = 0
 	tilemap_data = PipeMap( width = grid_width,
 							height = grid_height,
 							offset_x = offset_x,
@@ -34,20 +32,18 @@ def create_grid(world, grid_width, grid_height):
 	world.add_component( tilemap, tilemap_data )
 
 	# Build map structure
-	tilemap_data.level[0][2] = "0"
-	tilemap_data.level[1][2] = "2"
-	tilemap_data.level[0][5] = "0"
-	tilemap_data.level[1][5] = "8"
-	tilemap_data.level[0][7] = "0"
-	tilemap_data.level[1][7] = "2"
-	tilemap_data.level[grid_height - 1][1] = "1"
-	tilemap_data.level[grid_height - 2][1] = "7"
-	tilemap_data.level[grid_height - 1][4] = "1"
-	tilemap_data.level[grid_height - 2][4] = "7"
-	tilemap_data.level[grid_height - 1][5] = "1"
-	tilemap_data.level[grid_height - 2][5] = "2"
-	tilemap_data.level[grid_height - 1][6] = "1"
-	tilemap_data.level[grid_height - 2][6] = "2"
+	tilemap_data.level[0][2] = PIPE_INPUT
+	tilemap_data.level[1][2] = PIPE_VERTICAL
+	tilemap_data.level[0][5] = PIPE_INPUT
+	tilemap_data.level[1][5] = PIPE_T_LEFT
+	tilemap_data.level[0][7] = PIPE_INPUT
+	tilemap_data.level[1][7] = PIPE_VERTICAL
+	tilemap_data.level[grid_height - 1][1] = PIPE_OUTPUT
+	tilemap_data.level[grid_height - 2][1] = PIPE_BENT_RIGHT_DOWN
+	tilemap_data.level[grid_height - 1][4] = PIPE_OUTPUT
+	tilemap_data.level[grid_height - 2][4] = PIPE_BENT_LEFT_DOWN
+	tilemap_data.level[grid_height - 1][6] = PIPE_OUTPUT
+	tilemap_data.level[grid_height - 2][6] = PIPE_VERTICAL
 
 	# Create components for the base map
 	for row in range(grid_height):
@@ -71,6 +67,7 @@ def create_grid(world, grid_width, grid_height):
 				Pipe(
 					file_name=PIPES[tilemap_data.level[row][col]]["sprite"],
 					spawn_point=spawn_point,
+					pipe_id=PIPES[tilemap_data.level[row][col]]["id"],
 					left=PIPES[tilemap_data.level[row][col]]["left"],
 					right=PIPES[tilemap_data.level[row][col]]["right"],
 					up=PIPES[tilemap_data.level[row][col]]["up"],
@@ -78,9 +75,6 @@ def create_grid(world, grid_width, grid_height):
 					fixed=PIPES[tilemap_data.level[row][col]]["fixed"]
 				)
 			)
-
-	# Grid area
-	return pygame.Rect( tilemap_data.offset_x, tilemap_data.offset_y, tilemap_data.world_width, tilemap_data.world_height )
 
 
 def create_deck(world, font, deck_width, deck_height):
@@ -90,9 +84,11 @@ def create_deck(world, font, deck_width, deck_height):
 	reroll_button = world.create_entity()
 
 	# Components
-	deck_component = Deck( width=deck_width, height=deck_height, offset_x=TILE_SIZE, offset_y=TILE_SIZE )
+	deck_component = Deck( width=deck_width, height=deck_height, offset_x=0, offset_y=0 )
+	deck_component.reset(world)
 	world.add_component( deck, deck_component )
 
+	# Reroll button
 	text = "Reroll"
 	text_surface = font.render( text, True, (255, 255, 255) )
 	text_size = font.size(text)
@@ -102,8 +98,6 @@ def create_deck(world, font, deck_width, deck_height):
 	world.add_component( reroll_button, image )
 	world.add_component( reroll_button, UiText( text=text, surface=text_surface, rect=text_rect, size=32 ) )
 	world.add_component( reroll_button, UiItem( rect=image.rect, callback=lambda: deck_component.reset(world) ) )
-
-	return pygame.Rect( deck_component.offset_x, deck_component.offset_y, deck_component.width, deck_component.height )
 
 
 # -------------------------------------------------------------------------------------------------
@@ -120,10 +114,10 @@ def load(file_name):
 	font = pygame.font.SysFont(None, 32)
 
 	# Create game area grid
-	grid_area = create_grid(world, 10, 9)
+	create_grid(world, GRID_WIDTH, GRID_HEIGHT)
 
 	# Create side deck interface
-	deck_area = create_deck(world, font, 4, 9)
+	create_deck(world, font, DECK_WIDTH, DECK_HEIGHT)
 
 	# Entities
 	cursor = world.create_entity()
@@ -135,7 +129,7 @@ def load(file_name):
 
 	# Systems
 	world.add_processor( TimerController( scene_name=file_name, timer_entity=timer ) )
-	world.add_processor( MouseInputHandler( scene_name=file_name, cursor_entity=cursor, deck_area=deck_area, grid_area=grid_area ) )
+	world.add_processor( MouseInputHandler( scene_name=file_name, cursor_entity=cursor ) )
 	world.add_processor( Rendering( scene_name=file_name, world_width=screen_size[0], world_height=screen_size[1] ) )
 
 	return world
