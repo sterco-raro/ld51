@@ -32,6 +32,7 @@ class Rendering(Processor):
 		self.canvas = pygame.Surface( (world_width, world_height) ).convert()
 
 		self.deck_background = load_scaled_image( SPRITE_DECK_BG, (192, 576) )
+		self.grid_background = load_scaled_image( SPRITE_GRID_BG, (640, 576) )
 
 		# Component references
 		self.cursor 	= None
@@ -72,7 +73,8 @@ class Rendering(Processor):
 		# Clear the screen
 		self.canvas.blit(self.background, (0, 0))
 
-		# Grid debug
+		# Grid
+		self.canvas.blit( self.grid_background, (self.grid.offset_x, self.grid.offset_y), self.grid.area )
 		if self.debug:
 			pygame.draw.rect( self.canvas, (0, 0, 255), self.grid.interactable_area, width = 5 )
 			for row in range( self.grid.map_height ):
@@ -85,7 +87,7 @@ class Rendering(Processor):
 										width = 1 )
 
 		# Deck
-		self.canvas.blit( self.deck_background, (0, 0), self.deck.area )
+		self.canvas.blit( self.deck_background, (self.deck.offset_x, self.deck.offset_y), self.deck.area )
 		if self.debug:
 			pygame.draw.rect( self.canvas, (255, 0, 0), self.deck.interactable_area, width = 5 )
 
