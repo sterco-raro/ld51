@@ -90,7 +90,7 @@ def create_deck(world, font, deck_width, deck_height):
 	world.add_component( deck, deck_component )
 
 	# First button
-	text = "Reroll"
+	text = "Draw"
 	text_surface = font.render( text, True, (255, 255, 255) )
 	text_size = font.size(text)
 	text_rect = text_surface.get_rect( center = ( 	deck_component.offset_x + deck_component.padding_outer + TILE_SIZE//2,
@@ -101,7 +101,7 @@ def create_deck(world, font, deck_width, deck_height):
 	image.rect.center = text_rect.center
 	world.add_component( left_button, image )
 	world.add_component( left_button, UiText( text=text, surface=text_surface, rect=text_rect, size=32 ) )
-	world.add_component( left_button, UiItem( rect=image.rect, callback=lambda: deck_component.reset(world) ) )
+	world.add_component( left_button, UiItem( rect=image.rect, callback=lambda: deck_component.draw(world) ) )
 
 	# Second button
 	text = "Boh?"
