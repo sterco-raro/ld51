@@ -31,6 +31,8 @@ class Rendering(Processor):
 		# Working canvas for sprite rendering
 		self.canvas = pygame.Surface( (world_width, world_height) ).convert()
 
+		self.deck_background = load_scaled_image( SPRITE_DECK_BG, (192, 576) )
+
 		# Component references
 		self.cursor 	= None
 		self.timer 		= None
@@ -82,7 +84,8 @@ class Rendering(Processor):
 											TILE_SIZE, TILE_SIZE ),
 										width = 1 )
 
-		# Deck debug
+		# Deck
+		self.canvas.blit( self.deck_background, (0, 0), self.deck.area )
 		if self.debug:
 			pygame.draw.rect( self.canvas, (255, 0, 0), self.deck.interactable_area, width = 5 )
 
@@ -109,12 +112,8 @@ class Rendering(Processor):
 
 		# Draw UI buttons
 		color = None
-		for ent, button in self.world.get_component( UiButton ):
-			if button.image:
-				self.canvas.blit( button.image, button.rect )
-			else:
-				color = button.inactive_color if not button.hovering else button.active_color
-				pygame.draw.rect( self.canvas, color, button.rect )
+		for ent, button in self.world.get_component( UiButtonStates ):
+			self.canvas.blit( button.image, button.rect )
 
 		# Draw UI text
 		for ent, text in self.world.get_component( UiText ):

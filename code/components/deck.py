@@ -75,7 +75,7 @@ class Deck:
 
 			first_col_x = self.offset_x + self.padding_outer
 			second_col_x = first_col_x + TILE_SIZE + self.padding_inner
-			base_row_y = self.offset_y + self.padding_outer + self.padding_inner
+			base_row_y = self.offset_y + self.padding_outer
 			for i in range(10):
 				if i < 5:
 					height = (i + 1) * TILE_SIZE + (i + 1) * self.padding_inner

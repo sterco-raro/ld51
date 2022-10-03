@@ -91,31 +91,23 @@ class MouseInputHandler(Processor):
 					self.actions_cooldown.activate()
 
 		# Buttons management
-		for ent, (button, item) in self.world.get_components( UiButton, UiItem ):
+		for ent, (button, item) in self.world.get_components( UiButtonStates, UiItem ):
 
 			collision = item.rect.collidepoint( self.cursor.rect.center )
 			mouse_left, _, __ = pygame.mouse.get_pressed()
 
-			# Check button state for hovering effect (only on basic fill-buttons)
-			if (
-				# Should this button be enabled?
-				self.selected_from_deck				and
-				# Toggle hovering only one time: when the mouse enters or exits the button rectangle
-				not button.image 					and
-				(not button.hovering and collision) or
-				(button.hovering and not collision)
-			):
+			# Check button state for hovering effect
+			if (not button.hovering and collision) or (button.hovering and not collision):
 				button.hovering = not button.hovering
 
 			# Activate item callback
-			if (
-				not self.actions_cooldown.active 					and
-				(collision and mouse_left)							and
-				(self.selected_from_deck and self.selected_id != -1)
-			):
+			if not self.actions_cooldown.active and (collision and mouse_left):
+				button.pressed = True
 				item.callback()
 				self._clear_selection()
 				self.actions_cooldown.activate()
+			elif not self.actions_cooldown.active and (not collision or not mouse_left):
+				button.pressed = False
 
 	def handle_grid_input(self):
 		"""Process user input on the grid"""
