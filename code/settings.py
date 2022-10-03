@@ -23,6 +23,12 @@ GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "
 
 SPRITE_UNKNOWN 				= "unknown.png"
 SPRITE_CURSOR 				= "menu_cursor.png"
+
+SPRITE_DECK_BG 				= "deck/deckbg_10slots_baked.png"
+SPRITE_BUTTON_NORMAL 		= "deck/deckgrid_button.png"
+SPRITE_BUTTON_PRESSED 		= "deck/deckgrid_button_pressed.png"
+SPRITE_BUTTON_HOVERING 		= "deck/deckgrid_button_hover.png"
+
 SPRITE_PIPE_CROSS 			= "pipes/cross.png"
 SPRITE_PIPE_VERTICAL 		= "pipes/vertical.png"
 SPRITE_PIPE_HORIZONTAL 		= "pipes/horizontal.png"

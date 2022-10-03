@@ -110,3 +110,8 @@ class PipeMap:
 		row = pos[0] // TILE_SIZE - self.offset_x // TILE_SIZE
 		col = pos[1] // TILE_SIZE - self.offset_y // TILE_SIZE
 		self._set_at(row, col, value)
+
+	def swap(self, old_pos, new_pos, value):
+		old_value = self.get( new_pos )
+		self.set( old_pos, old_value )
+		self.set( new_pos, value )

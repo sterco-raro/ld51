@@ -81,23 +81,40 @@ def create_deck(world, font, deck_width, deck_height):
 
 	# Entities
 	deck = world.create_entity()
-	reroll_button = world.create_entity()
+	left_button = world.create_entity()
+	right_button = world.create_entity()
 
-	# Components
+	# Deck
 	deck_component = Deck( width=deck_width, height=deck_height, offset_x=0, offset_y=0 )
 	deck_component.reset(world)
 	world.add_component( deck, deck_component )
 
-	# Reroll button
-	text = "Reroll"
+	# First button
+	text = "Draw"
 	text_surface = font.render( text, True, (255, 255, 255) )
 	text_size = font.size(text)
-	text_rect = text_surface.get_rect( center = ( text_size[0] + deck_component.offset_x, text_size[1] + deck_component.offset_y ) )
-	image = UiButton( rect = pygame.Rect( text_rect.x - 5, text_rect.y - 5, text_rect.w + 10, text_rect.h + 10 ), inactive_color = ( 200, 20, 20 ) )
+	text_rect = text_surface.get_rect( center = ( 	deck_component.offset_x + deck_component.padding_outer + TILE_SIZE//2,
+													deck_component.offset_y + deck_component.padding_outer + TILE_SIZE//2 ) )
+	image = UiButtonStates( normal_image_filename = SPRITE_BUTTON_NORMAL,
+							pressed_image_filename = SPRITE_BUTTON_PRESSED,
+							hovering_image_filename = SPRITE_BUTTON_HOVERING )
 	image.rect.center = text_rect.center
-	world.add_component( reroll_button, image )
-	world.add_component( reroll_button, UiText( text=text, surface=text_surface, rect=text_rect, size=32 ) )
-	world.add_component( reroll_button, UiItem( rect=image.rect, callback=lambda: deck_component.reset(world) ) )
+	world.add_component( left_button, image )
+	world.add_component( left_button, UiText( text=text, surface=text_surface, rect=text_rect, size=32 ) )
+	world.add_component( left_button, UiItem( rect=image.rect, callback=lambda: deck_component.draw(world) ) )
+
+	# Second button
+	text = "Boh?"
+	text_surface = font.render( text, True, (255, 255, 255) )
+	text_size = font.size(text)
+	text_rect = text_surface.get_rect( center = ( 	(deck_component.offset_x + deck_component.padding_outer + TILE_SIZE//2) + deck_component.padding_inner + TILE_SIZE,
+													deck_component.offset_y + deck_component.padding_outer + TILE_SIZE//2 ) )
+	image = UiButtonStates( normal_image_filename = SPRITE_BUTTON_NORMAL,
+							pressed_image_filename = SPRITE_BUTTON_PRESSED,
+							hovering_image_filename = SPRITE_BUTTON_HOVERING )
+	image.rect.center = text_rect.center
+	world.add_component( right_button, image )
+	world.add_component( right_button, UiText( text=text, surface=text_surface, rect=text_rect, size=32 ) )
 
 
 # -------------------------------------------------------------------------------------------------
@@ -111,7 +128,7 @@ def load(file_name):
 	screen_size = screen.get_size()
 
 	# Pygame font object
-	font = pygame.font.SysFont(None, 32)
+	font = pygame.font.SysFont(None, 24)
 
 	# Create game area grid
 	create_grid(world, GRID_WIDTH, GRID_HEIGHT)

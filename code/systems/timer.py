@@ -37,4 +37,3 @@ class TimerController(Processor):
 		if not self.cooldown.active:
 			if not self.timer.active:
 				self.timer.activate()
-				dispatch_event("reset_deck_hand")
