@@ -54,15 +54,23 @@ class MouseInputHandler(Processor):
 	def on_healthcheck_error(self, grid_position, direction_from):
 		entity = self.world.create_entity()
 
-		x = grid_position[0] * TILE_SIZE + self.grid.offset_x
-		y = grid_position[1] * TILE_SIZE + self.grid.offset_y
+		x = (grid_position[1] * TILE_SIZE + self.grid.offset_x + TILE_SIZE) - TILE_SIZE//2
+		y = (grid_position[0] * TILE_SIZE + self.grid.offset_y + TILE_SIZE) - TILE_SIZE//2
+
+		# rotate sprite following @direction_from
+		angle = None
+		if direction_from == "up": angle = 0.0
+		if direction_from == "right": angle = -90.0
+		if direction_from == "down": angle = -180.0
+		if direction_from == "left": angle = -270.0
 
 		animation = AnimatedSprite( duration = 1500,
 									folder = "spurt",
 									frames_table = { "images": [] },
-									scale_size = (),
+									scale_size = (64, 64),
 									spawn_point = (x, y),
-									speed = 12 )
+									speed = 12,
+									angle = angle )
 
 		self.world.add_component( entity, animation )
 

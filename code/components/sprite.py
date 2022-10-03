@@ -1,4 +1,5 @@
 from os.path import join
+import pygame
 from code.timer import Timer
 from code.utils import import_folder, load_image, load_scaled_image
 from code.settings import (
@@ -55,6 +56,7 @@ class AnimatedSprite:
 		spawn_point 	= (-1024, -1024),
 		speed 			= 6,
 		debug_color 	= ANIMATED_SPRITE_DEBUG_COLOR,
+		angle 			= None
 	):
 		self.duration 		= duration
 		self.folder 		= folder
@@ -70,6 +72,8 @@ class AnimatedSprite:
 		self.frame_index 		= 0
 		self.frames_table_keys 	= list(self.frames_table.keys())
 		self.timer 				= Timer( self.duration )
+
+		self.angle = angle
 
 		# Setup images
 		self.load( folder )
@@ -96,8 +100,12 @@ class AnimatedSprite:
 		self.status = self.frames_table_keys[0]
 
 		# Assign current animation frame
-		self.image = self.frames_table[self.status][self.frame_index]
+		if self.angle:
+			self.image = pygame.transform.rotate(self.frames_table[self.status][self.frame_index], self.angle)
+		else:
+			self.image = self.frames_table[self.status][self.frame_index]
 		self.rect = self.image.get_rect( center = self.spawn_point )
+
 
 		# Start animation
 		if self.duration: self.timer.activate()
@@ -114,7 +122,10 @@ class AnimatedSprite:
 
 		# Update current animation frame
 		old_rect = self.rect
-		self.image = self.frames_table[self.status][int(self.frame_index)]
+		if self.angle:
+			self.image = pygame.transform.rotate(self.frames_table[self.status][int(self.frame_index)], self.angle)
+		else:
+			self.image = self.frames_table[self.status][int(self.frame_index)]
 		self.rect = self.image.get_rect( center = old_rect.center )
 
 		if self.duration: self.timer.update()

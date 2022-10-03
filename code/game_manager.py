@@ -45,9 +45,9 @@ class GameManager():
 			PROFILING_FILE.close()
 		time.sleep(0.5)
 
-	def on_play_sound(self, name):
+	def on_play_sound(self, name, loops=0):
 		if name in self.sounds.keys():
-			self.sounds[name].play()
+			self.sounds[name].play(loops=loops)
 
 	def show_splash_screen(self):
 		"""Quick and dirty splash screen"""
