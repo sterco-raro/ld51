@@ -152,7 +152,7 @@ class GameManager():
 	def run(self):
 		"""Game loop"""
 
-		pygame.mixer.music.play()
+		pygame.mixer.music.play( loops = -1 )
 
 		while self.running:
 			# General event handler
