@@ -22,7 +22,9 @@ PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
 GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "graphics")
 
 SPRITE_UNKNOWN 				= "unknown.png"
-SPRITE_CURSOR 				= "menu_cursor.png"
+SPRITE_CURSOR 				= "cursors/hand_point.png"
+SPRITE_CURSOR_OPEN			= "cursors/hand_open.png"
+SPRITE_CURSOR_CLOSED		= "cursors/hand_closed.png"
 
 SPRITE_GRID_BG 				= "gridbg.png"
 SPRITE_DECK_BG 				= "deck/deckbg_10slots_baked.png"
@@ -127,3 +129,20 @@ ANIM_TABLE_EXPLOSION 	= { "big": [] }
 PLAYER_COOLDOWN_BOMB 	= 1000
 PLAYER_DURATION_ATTACK 	= 500
 PLAYER_DURATION_HURT 	= 500
+
+
+SOUNDS = [
+	"button_downup.wav",
+	"button_down.wav",
+	"button_up.wav",
+	"fart.wav",
+	"flush.wav",
+	"pipe_drop.wav",
+	"pipe_pick.wav",
+	"pipe_plop.wav",
+	"pipe_rotate.wav",
+	"rattle.wav",
+	"rattleflush.wav",
+	"snap.wav",
+	"weird.wav",
+]

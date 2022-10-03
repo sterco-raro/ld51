@@ -136,8 +136,6 @@ class Deck:
 		"""Put a new card in the inventory"""
 		if entity in self.current_hand: return
 
-		print("INSERT: {}".format(entity))
-
 		self.current_hand.append( entity )
 		for key, slot in self.card_slots.items():
 			# Check if @position is inside the current slot

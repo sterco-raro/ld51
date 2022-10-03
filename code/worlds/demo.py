@@ -6,6 +6,7 @@ from code.components.deck import *
 from code.components.map import *
 from code.components.sprite import *
 from code.components.ui import *
+from code.systems.animation import *
 from code.systems.input import *
 from code.systems.rendering import *
 from code.systems.timer import *
@@ -33,16 +34,22 @@ def create_grid(world, grid_width, grid_height):
 
 	# Build map structure
 	tilemap_data.level[0][2] = PIPE_INPUT
+	tilemap_data.inputs.append((0,2))
 	tilemap_data.level[1][2] = PIPE_VERTICAL
 	tilemap_data.level[0][5] = PIPE_INPUT
+	tilemap_data.inputs.append((0,5))
 	tilemap_data.level[1][5] = PIPE_T_LEFT
 	tilemap_data.level[0][7] = PIPE_INPUT
+	tilemap_data.inputs.append((0,7))
 	tilemap_data.level[1][7] = PIPE_VERTICAL
 	tilemap_data.level[grid_height - 1][1] = PIPE_OUTPUT
+	tilemap_data.outputs.append((grid_height - 1,1))
 	tilemap_data.level[grid_height - 2][1] = PIPE_BENT_RIGHT_DOWN
 	tilemap_data.level[grid_height - 1][4] = PIPE_OUTPUT
+	tilemap_data.outputs.append((grid_height - 1,4))
 	tilemap_data.level[grid_height - 2][4] = PIPE_BENT_LEFT_DOWN
 	tilemap_data.level[grid_height - 1][6] = PIPE_OUTPUT
+	tilemap_data.outputs.append((grid_height - 1,6))
 	tilemap_data.level[grid_height - 2][6] = PIPE_VERTICAL
 
 	# Create components for the base map
@@ -141,12 +148,13 @@ def load(file_name):
 	timer = world.create_entity()
 
 	# Components
-	world.add_component( cursor, Cursor() )
+	world.add_component( cursor, Cursor( scale_size=(24, 24) ) )
 	world.add_component( timer, Timer( 10000 ) )
 
 	# Systems
 	world.add_processor( TimerController( scene_name=file_name, timer_entity=timer ) )
 	world.add_processor( MouseInputHandler( scene_name=file_name, cursor_entity=cursor ) )
+	world.add_processor( AnimationController() )
 	world.add_processor( Rendering( scene_name=file_name, world_width=screen_size[0], world_height=screen_size[1] ) )
 
 	return world

@@ -130,15 +130,21 @@ class Rendering(Processor):
 		text_rect = text_surface.get_rect( center = (x, y) )
 		self.canvas.blit( text_surface, text_rect )
 
+		# Draw any animated sprite
+		for ent, sprite in self.world.get_component( AnimatedSprite ):
+			self.canvas.blit( sprite.image, sprite.rect )
+			if self.debug:
+				pygame.draw.rect( self.canvas, sprite.debug_color, sprite.rect, width=3 )
+
 		# Draw mouse cursor
 		self.canvas.blit( self.cursor.image, self.cursor.rect )
 
-		# TODO TMP
-		if self.debug:
-			text = "({}, {}) => D: {} G: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery, self.deck.get_slot(self.cursor.rect.center), self.grid.get(self.cursor.rect.center))
-			text_surface = self.font.render(text, True, (255, 255, 255))
-			self.canvas.blit( text_surface, text_surface.get_rect( center = ( 400, 32 ) ) )
-		# TODO TMP
+		# # TODO TMP
+		# if self.debug:
+		# 	text = "({}, {}) => D: {} G: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery, self.deck.get_slot(self.cursor.rect.center), self.grid.get(self.cursor.rect.center))
+		# 	text_surface = self.font.render(text, True, (255, 255, 255))
+		# 	self.canvas.blit( text_surface, text_surface.get_rect( center = ( 400, 32 ) ) )
+		# # TODO TMP
 
 		# Stop map surfaces construction once done
 		if self.redraw_map: self.redraw_map = False

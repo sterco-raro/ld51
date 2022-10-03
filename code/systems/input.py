@@ -1,7 +1,7 @@
 import random
-import pygame # TODO Only import necessary variables/functions/classes
+import pygame
 from copy 	import deepcopy
-from esper 	import Processor, set_handler
+from esper 	import Processor, set_handler, dispatch_event
 from code.settings 			import *
 from code.timer 			import *
 from code.components.cursor import *
@@ -34,6 +34,7 @@ class MouseInputHandler(Processor):
 
 		# Event handlers
 		set_handler("reset_deck_hand", self.on_reset_deck_hand)
+		set_handler( "healthcheck_error", self.on_healthcheck_error )
 
 	def _clear_selection(self):
 		self.selected_id = -1
@@ -49,6 +50,21 @@ class MouseInputHandler(Processor):
 		if self.deck:
 			self.deck.reset(self.world)
 		self._clear_selection()
+
+	def on_healthcheck_error(self, grid_position, direction_from):
+		entity = self.world.create_entity()
+
+		x = grid_position[0] * TILE_SIZE + self.grid.offset_x
+		y = grid_position[1] * TILE_SIZE + self.grid.offset_y
+
+		animation = AnimatedSprite( duration = 1500,
+									folder = "spurt",
+									frames_table = { "images": [] },
+									scale_size = (),
+									spawn_point = (x, y),
+									speed = 12 )
+
+		self.world.add_component( entity, animation )
 
 	def handle_deck_input(self):
 		"""Process user input on the deck"""
@@ -106,10 +122,13 @@ class MouseInputHandler(Processor):
 												self.cursor.rect.center,
 												self.selected_sprite )
 
+							dispatch_event( "on_play_sound", "pipe_drop" )
+
 							self._clear_selection()
 
 						# Select new sprite
 						else:
+							dispatch_event( "on_play_sound", "pipe_pick" )
 							sprite.selected = True
 							self._fill_selection( ent, sprite )
 
@@ -128,6 +147,7 @@ class MouseInputHandler(Processor):
 
 			# Activate item callback
 			if not self.actions_cooldown.active and (collision and mouse_left):
+				dispatch_event( "on_play_sound", "button_downup" )
 				button.pressed = True
 				item.callback()
 				self._clear_selection()
@@ -159,6 +179,8 @@ class MouseInputHandler(Processor):
 				self.deck.insert( 	self.selected_id,
 									self.cursor.rect.center,
 									self.selected_sprite )
+
+				dispatch_event( "on_play_sound", "pipe_drop" )
 
 				self._clear_selection()
 				self.actions_cooldown.activate()
@@ -219,10 +241,13 @@ class MouseInputHandler(Processor):
 								self.selected_sprite.rect.x = x
 								self.selected_sprite.rect.y = y
 
+							dispatch_event( "on_play_sound", "pipe_plop" )
+
 							self._clear_selection()
 
 						# Select new sprite
 						else:
+							dispatch_event( "on_play_sound", "pipe_pick" )
 							sprite.selected = True
 							self._fill_selection( ent, sprite )
 
@@ -231,6 +256,7 @@ class MouseInputHandler(Processor):
 
 				# Mouse action: rotate
 				if mouse_right:
+					dispatch_event( "on_play_sound", "pipe_rotate" )
 					sprite.rotate()
 					self._clear_selection()
 					self.actions_cooldown.activate()
@@ -261,6 +287,8 @@ class MouseInputHandler(Processor):
 
 				# Remove selection from deck
 				self.deck.remove( self.selected_id )
+
+				dispatch_event( "on_play_sound", "pipe_plop" )
 
 				# Reset selection
 				self._clear_selection()

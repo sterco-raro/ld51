@@ -13,6 +13,7 @@ class GameManager():
 	def __init__(self):
 		# Setup pygame
 		pygame.init()
+		pygame.mixer.init()
 
 		self.screen 		= None	# Main window surface
 		self.clock 			= None 	# FPS limiter
@@ -25,8 +26,11 @@ class GameManager():
 		self.target_fps 	= FPS_LIMIT
 		self.screen_flags 	= SCREEN_MODE_FLAGS
 
+		self.sounds = {}
+
 		# Register event handlers
 		esper.set_handler("quit_to_desktop", self.on_game_quit)
+		esper.set_handler("on_play_sound", self.on_play_sound)
 
 		# Setup manager instance
 		self.reset()
@@ -38,6 +42,10 @@ class GameManager():
 		if not PROFILING_FILE.closed:
 			PROFILING_FILE.close()
 		time.sleep(0.5)
+
+	def on_play_sound(self, name):
+		if name in self.sounds.keys():
+			self.sounds[name].play()
 
 	def show_splash_screen(self):
 		"""Quick and dirty splash screen"""
@@ -82,6 +90,11 @@ class GameManager():
 
 		# Initialize the game scenes
 		self.world = WorldManager()
+
+		# Setup sounds
+		self.sounds = {}
+		for file_name in SOUNDS:
+			self.sounds[ file_name.split(".")[0] ] = pygame.mixer.Sound(os.path.join("sounds", file_name))
 
 		# Start game loop
 		self.running = True

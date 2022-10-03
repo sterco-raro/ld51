@@ -1,7 +1,8 @@
-from esper 	import Processor, dispatch_event
+from esper 					import Processor, dispatch_event
 from code.settings 			import *
 from code.timer 			import *
 from code.components.deck 	import *
+from code.components.sprite	import *
 
 
 # -------------------------------------------------------------------------------------------------
@@ -11,23 +12,65 @@ class TimerController(Processor):
 	"""Game timer controller"""
 
 	def __init__(self, scene_name, timer_entity):
-		self.scene_name = scene_name
-		self.timer_entity = timer_entity
+		self.scene_name 	= scene_name
+		self.timer_entity 	= timer_entity
 
-		# Timer component reference
-		self.timer = None
+		# Components references
+		self.timer 	= None
+		self.grid 	= None
 
 		# End timer cooldown
-		self.cooldown = Timer( 1000 )
+		self.cooldown = Timer( 3200 )
+
+	def _healthcheck(self, grid_pos):
+		pass
+		# if element in grid is output: return ok
+		# foreach available link:
+			# if link is open: play sound, return error
+		# no errors yet, recurse (foreach available link do healthcheck(grid_pos_next))
+
+	def grid_healthcheck(self):
+		print(self.grid.active_inputs)
+		if self.grid.active_inputs:
+			pass
+			# foreach active input do healthcheck(grid_pos_below)
+			# for i in len(self.grid.active_inputs):
+			# 	self._healthcheck( ( self.grid.active_inputs[i][0], self.grid.active_inputs[i][1] + 1 ) )
+
+	def prepare_flush(self):
+		# choose a rundom subset of available inputs
+		random_inputs = random.randint(1, len(self.grid.inputs))
+		inputs = []
+		choice = None
+		for i in range(random_inputs):
+			choice = random.choice(self.grid.inputs)
+			inputs.append( choice )
+			# show visual cue
+			entity = self.world.create_entity()
+			x = choice[1] * TILE_SIZE + self.grid.offset_x + TILE_SIZE//2
+			y = choice[0] * TILE_SIZE + self.grid.offset_y + TILE_SIZE//2
+			sprite = AnimatedSprite( 	duration = 1500,
+										folder = "warning",
+										frames_table = { "images": [] },
+										scale_size = (32, 32),
+										spawn_point = (x,y),
+										speed = 6 )
+			self.world.add_component( entity, sprite )
+		# store active inputs in the grid
+		self.grid.active_inputs = inputs
 
 	def process(self):
 		if not self.timer:
-			self.timer = self.world.component_for_entity(self.timer_entity, Timer)
+			self.timer = self.world.component_for_entity( self.timer_entity, Timer )
+
+		if not self.grid:
+			self.grid = self.world.get_component( PipeMap )[0][1]
 
 		# Activate a small cooldown to handle events when the timer has reached its end
 		if self.timer.value >= 10:
 			self.cooldown.activate()
-			# TODO Launch pipe system check
+			dispatch_event( "on_play_sound", "rattleflush" )
+			self.grid_healthcheck()
 
 		# Update timers
 		self.timer.update()
@@ -36,4 +79,6 @@ class TimerController(Processor):
 		# Keep the timer inactive while the cooldown is still running
 		if not self.cooldown.active:
 			if not self.timer.active:
+				# dispatch_event( "on_play_sound", "snap" )
+				self.prepare_flush()
 				self.timer.activate()

@@ -18,7 +18,6 @@ class Pipe(StaticSprite):
 		debug_color = MAP_TILE_DEBUG_COLOR,
 		pipe_id 	= PIPE_VERTICAL,
 		left = True, right = True, up = False, down = False,
-		leftMale = False, rightMale = True, upMale = False, downMale = False,
 		fixed = False
 	):
 		super().__init__(
@@ -30,13 +29,9 @@ class Pipe(StaticSprite):
 		)
 		self.pipe_id 	= pipe_id
 		self.left 		= left
-		self.leftMale 	= leftMale
 		self.right 		= right
-		self.rightMale	= rightMale
 		self.up 		= up
-		self.upMale		= upMale
 		self.down		= down
-		self.downMale	= downMale
 
 		# Pipe state
 		self.fixed = fixed
@@ -47,10 +42,23 @@ class Pipe(StaticSprite):
 		self.angle = 0.0
 
 	def rotate(self):
-		self.angle += 90.0
-		if self.angle >= 360.0:
+		self.angle -= 90.0
+		if self.angle <= -360.0:
 			self.angle = 0.0
 		self.image = pygame.transform.rotate( self.original, self.angle )
+		# Update connections
+		left 	= False
+		up 		= False
+		right 	= False
+		down 	= False
+		if self.left: 	up 		= True
+		if self.up: 	right 	= True
+		if self.right:	down 	= True
+		if self.down: 	left 	= True
+		self.left 	= left
+		self.up 	= up
+		self.right 	= right
+		self.down 	= down
 
 
 # -------------------------------------------------------------------------------------------------
@@ -78,12 +86,18 @@ class PipeMap:
 												self.height - 2 * TILE_SIZE )
 
 		# Map data
-		self.level = []
+		self.level 			= []
+		self.inputs			= []
+		self.active_inputs 	= []
+		self.outputs 		= []
 
 		self.reset()
 
 	def reset(self):
-		self.level = []
+		self.level 			= []
+		self.inputs			= []
+		self.active_inputs 	= []
+		self.outputs 		= []
 		for row in range(self.map_height):
 			self.level.append([])
 			for col in range(self.map_width):
