@@ -134,7 +134,7 @@ class Rendering(Processor):
 
 		# TODO TMP
 		if self.debug:
-			text = "({}, {})".format( self.cursor.rect.centerx // TILE_SIZE - self.grid.offset_x // TILE_SIZE, self.cursor.rect.centery // TILE_SIZE)
+			text = "({}, {})".format( self.cursor.rect.centerx, self.cursor.rect.centery)
 			text_surface = self.font.render(text, True, (255, 255, 255))
 			self.canvas.blit( text_surface, text_surface.get_rect( center = ( 300, 50 ) ) )
 		# TODO TMP
