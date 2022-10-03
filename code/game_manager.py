@@ -118,36 +118,38 @@ class GameManager():
 			# Debugging keys
 			if ev.type == pygame.KEYDOWN:
 
-				# Reset game manager
-				if ev.key == pygame.K_r:
-					self.reset()
+				# # Reset game manager
+				# if ev.key == pygame.K_r:
+				# 	self.reset()
 
-				# Toggle debug
-				if ev.key == pygame.K_k:
-					self.debug = not self.debug
-					esper.dispatch_event("toggle_debug", self.debug)
+				# # Toggle debug
+				# if ev.key == pygame.K_k:
+				# 	self.debug = not self.debug
+				# 	esper.dispatch_event("toggle_debug", self.debug)
 
-				# Reset world manager
-				if ev.key == pygame.K_0:
-					self.world.reset()
+				# # Reset world manager
+				# if ev.key == pygame.K_0:
+				# 	self.world.reset()
 
-				# Change current fps
-				if ev.key == pygame.K_1:
-					self.target_fps = 10
-				if ev.key == pygame.K_2:
-					self.target_fps = 30
-				if ev.key == pygame.K_3:
-					self.target_fps = 60
-				if ev.key == pygame.K_4:
-					self.target_fps = 120
-				if ev.key == pygame.K_5:
-					self.target_fps = 144
+				# # Change current fps
+				# if ev.key == pygame.K_1:
+				# 	self.target_fps = 10
+				# if ev.key == pygame.K_2:
+				# 	self.target_fps = 30
+				# if ev.key == pygame.K_3:
+				# 	self.target_fps = 60
+				# if ev.key == pygame.K_4:
+				# 	self.target_fps = 120
+				# if ev.key == pygame.K_5:
+				# 	self.target_fps = 144
 
 				# Change scenes
 				if ev.key == pygame.K_ESCAPE:
-					self.world.set_active("main_menu")
-				if ev.key == pygame.K_p:
-					self.world.set_active("demo")
+					pygame.mixer.music.rewind()
+					# self.world.set_active("main_menu")
+					self.world.reset()
+				# if ev.key == pygame.K_p:
+				# 	self.world.set_active("demo")
 
 	def run(self):
 		"""Game loop"""
