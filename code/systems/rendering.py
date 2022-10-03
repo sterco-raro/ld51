@@ -22,7 +22,7 @@ class Rendering(Processor):
 		self.screen_size	= self.screen.get_size()
 
 		# Pygame font
-		self.font_size 	= TILE_SIZE
+		self.font_size 	= TILE_SIZE//2
 		self.font 		= pygame.font.SysFont(None, self.font_size)
 
 		# Black surface to clear the screen
@@ -133,9 +133,9 @@ class Rendering(Processor):
 
 		# TODO TMP
 		if self.debug:
-			text = "({}, {})".format( self.cursor.rect.centerx, self.cursor.rect.centery)
+			text = "({}, {}) => D: {} G: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery, self.deck.get_slot(self.cursor.rect.center), self.grid.get(self.cursor.rect.center))
 			text_surface = self.font.render(text, True, (255, 255, 255))
-			self.canvas.blit( text_surface, text_surface.get_rect( center = ( 300, 50 ) ) )
+			self.canvas.blit( text_surface, text_surface.get_rect( center = ( 400, 32 ) ) )
 		# TODO TMP
 
 		# Stop map surfaces construction once done

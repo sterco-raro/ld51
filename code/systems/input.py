@@ -28,7 +28,6 @@ class MouseInputHandler(Processor):
 		# Currently selected entity
 		self.selected_id		= -1
 		self.selected_sprite 	= None
-		self.selected_from_deck = False
 
 		# Actions cooldown
 		self.actions_cooldown = Timer( duration = 100 )
@@ -38,13 +37,13 @@ class MouseInputHandler(Processor):
 
 	def _clear_selection(self):
 		self.selected_id = -1
+		if self.selected_sprite:
+			self.selected_sprite.selected = False
 		self.selected_sprite = None
-		self.selected_from_deck = False
 
-	def _fill_selection(self, entity, sprite, from_deck = False):
+	def _fill_selection(self, entity, sprite):
 		self.selected_id = entity
 		self.selected_sprite = sprite
-		self.selected_from_deck = from_deck
 
 	def on_reset_deck_hand(self):
 		if self.deck:
@@ -73,21 +72,48 @@ class MouseInputHandler(Processor):
 
 					# Clicking on the previously selected sprite
 					if self.selected_id == ent:
-
-						# Deselect old sprite
-						sprite.selected = False
 						self._clear_selection()
 
 					# Clicking on another sprite
 					else:
-						# Deselect old sprite
+
+						# Swap selected sprites
 						if self.selected_id != -1:
-							self.selected_sprite.selected = False
+
+							# Swap between grid and deck
+							if not self.selected_id in self.deck.current_hand:
+
+								old_x = sprite.rect.x
+								old_y = sprite.rect.y
+
+								# Store new grid value
+								self.grid.set( self.selected_sprite.rect.center, sprite.pipe_id )
+								# Update sprite position
+								sprite.rect.x = self.selected_sprite.rect.x
+								sprite.rect.y = self.selected_sprite.rect.y
+								# Clear deck slot
+								self.deck.remove( ent )
+
+								# Store new deck value (and update sprite position)
+								self.deck.insert( self.selected_id, self.cursor.rect.center )
+								self.selected_sprite.rect.x = old_x
+								self.selected_sprite.rect.y = old_y
+
+							# Swap inside the deck
+							else:
+								self.deck.swap( self.world,
+												self.selected_id,
+												self.cursor.rect.center,
+												self.selected_sprite )
+
+							self._clear_selection()
 
 						# Select new sprite
-						sprite.selected = True
-						self._fill_selection( ent, sprite, True )
+						else:
+							sprite.selected = True
+							self._fill_selection( ent, sprite )
 
+					# Avoid multiple clicks
 					self.actions_cooldown.activate()
 
 		# Buttons management
@@ -108,6 +134,34 @@ class MouseInputHandler(Processor):
 				self.actions_cooldown.activate()
 			elif not self.actions_cooldown.active and (not collision or not mouse_left):
 				button.pressed = False
+
+
+		# Mouse action: put selected item in inventory
+		if not self.actions_cooldown.active:
+
+			mouse_left, _, __ = pygame.mouse.get_pressed()
+
+			# Skip non interactable deck areas
+			if not self.deck.interactable_area.collidepoint( self.cursor.rect.center ): return
+
+			# Add sprite to inventory
+			if mouse_left and self.selected_id != -1:
+
+				# Clear old deck position
+				if self.selected_id in self.deck.current_hand:
+					self.deck.remove( self.selected_id )
+
+				# Clear old grid position
+				else:
+					self.grid.set( self.selected_sprite.rect.center, "-1" )
+
+				# Update deck
+				self.deck.insert( 	self.selected_id,
+									self.cursor.rect.center,
+									self.selected_sprite )
+
+				self._clear_selection()
+				self.actions_cooldown.activate()
 
 	def handle_grid_input(self):
 		"""Process user input on the grid"""
@@ -132,29 +186,52 @@ class MouseInputHandler(Processor):
 
 					# Clicking on the previously selected sprite
 					if self.selected_id == ent:
-
-						# Deselect old sprite
-						sprite.selected = False
 						self._clear_selection()
 
 					# Clicking on another sprite
 					else:
 
-						# Deselect old sprite
+						# Swap selected sprites
 						if self.selected_id != -1:
-							self.selected_sprite.selected = False
+
+							# Swap between grid and deck
+							if self.selected_id in self.deck.current_hand:
+
+								old_center = self.selected_sprite.rect.center
+
+								self.grid.set( self.cursor.rect.center, self.selected_sprite.pipe_id )
+								self.selected_sprite.rect.x = sprite.rect.x
+								self.selected_sprite.rect.y = sprite.rect.y
+
+								self.deck.remove( self.selected_id )
+								self.deck.insert( ent, old_center, sprite )
+								sprite.rect.center = old_center
+
+							# Swap inside the grid
+							else:
+								self.grid.swap( self.selected_sprite.rect.center,
+												self.cursor.rect.center,
+												self.selected_sprite.pipe_id )
+								x = sprite.rect.x
+								y = sprite.rect.y
+								sprite.rect.x = self.selected_sprite.rect.x
+								sprite.rect.y = self.selected_sprite.rect.y
+								self.selected_sprite.rect.x = x
+								self.selected_sprite.rect.y = y
+
+							self._clear_selection()
 
 						# Select new sprite
-						sprite.selected = True
-						self._fill_selection( ent, sprite, False )
+						else:
+							sprite.selected = True
+							self._fill_selection( ent, sprite )
 
+					# Avoid multiple clicks
 					self.actions_cooldown.activate()
 
 				# Mouse action: rotate
 				if mouse_right:
 					sprite.rotate()
-					if self.selected_sprite:
-						self.selected_sprite.selected = False
 					self._clear_selection()
 					self.actions_cooldown.activate()
 
@@ -170,24 +247,22 @@ class MouseInputHandler(Processor):
 			if self.grid.get( self.cursor.rect.center ) != "-1": return
 
 			# Fill position with selected item
-			if mouse_left and (self.selected_from_deck and self.selected_id != -1):
-				# Get selected sprite
-				sprite = self.world.component_for_entity( self.selected_id, Pipe )
+			if mouse_left and self.selected_id != -1:
 
 				# Skip fixed pipes
-				if sprite.fixed: return
+				if self.selected_sprite.fixed: return
 
 				# Update grid
-				self.grid.set( self.cursor.rect.center, sprite.pipe_id )
+				self.grid.set( self.selected_sprite.rect.center, "-1" )
+				self.grid.set( self.cursor.rect.center, self.selected_sprite.pipe_id )
 				# Update sprite position (grid-aligned)
-				sprite.rect.x = self.cursor.rect.centerx // TILE_SIZE * TILE_SIZE
-				sprite.rect.y = self.cursor.rect.centery // TILE_SIZE * TILE_SIZE
+				self.selected_sprite.rect.x = self.cursor.rect.centerx // TILE_SIZE * TILE_SIZE
+				self.selected_sprite.rect.y = self.cursor.rect.centery // TILE_SIZE * TILE_SIZE
 
 				# Remove selection from deck
 				self.deck.remove( self.selected_id )
 
 				# Reset selection
-				sprite.selected = False
 				self._clear_selection()
 				self.actions_cooldown.activate()
 

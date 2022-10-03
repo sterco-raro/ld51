@@ -79,6 +79,17 @@ class Deck:
 				data = { "position": (second_col_x, base_row_y + height), "occupied": False, "id": -1 }
 			self.card_slots[str(i)] = data
 
+	def clear_slot(self, position):
+		for key, slot in self.card_slots.items():
+			# Check if @position is inside the current slot
+			if (
+				(position[0] >= slot["position"][0] and position[0] <= slot["position"][0] + TILE_SIZE) and
+				(position[1] >= slot["position"][1] and position[1] <= slot["position"][1] + TILE_SIZE)
+			):
+				# Clear slot
+				slot["id"] = -1
+				slot["occupied"] = False
+
 	def draw(self, world):
 		if len(self.current_hand) >= self.hand_length: return
 
@@ -111,6 +122,76 @@ class Deck:
 		self.current_hand.append( entity )
 		self.card_slots[pos_in_hand]["id"] = entity
 		self.card_slots[pos_in_hand]["occupied"] = True
+
+	def get_slot(self, position):
+		for key, slot in self.card_slots.items():
+			if (
+				(position[0] >= slot["position"][0] and position[0] <= slot["position"][0] + TILE_SIZE) and
+				(position[1] >= slot["position"][1] and position[1] <= slot["position"][1] + TILE_SIZE)
+			):
+				return slot["id"]
+		return None
+
+	def insert(self, entity, position, sprite = None):
+		"""Put a new card in the inventory"""
+		if entity in self.current_hand: return
+
+		print("INSERT: {}".format(entity))
+
+		self.current_hand.append( entity )
+		for key, slot in self.card_slots.items():
+			# Check if @position is inside the current slot
+			if (
+				not slot["occupied"] 																	and
+				(position[0] >= slot["position"][0] and position[0] <= slot["position"][0] + TILE_SIZE) and
+				(position[1] >= slot["position"][1] and position[1] <= slot["position"][1] + TILE_SIZE)
+			):
+				# Update slot
+				slot["id"] = entity
+				slot["occupied"] = True
+				# Update sprite position
+				if sprite:
+					sprite.rect.x = slot["position"][0]
+					sprite.rect.y = slot["position"][1]
+
+	def swap(self, world, entity, position, sprite):
+		"""Move cards inside the inventory"""
+		if not entity in self.current_hand: return
+
+		old_home 	= "-1"
+		old_entity 	= -1
+
+		# Find this @entity's previous home and clear it
+		for key, slot in self.card_slots.items():
+			if slot["id"] == entity:
+				old_home = key
+				slot["id"] = -1
+				slot["occupied"] = False
+				break
+
+		# Find the destination slot, move the @entity there and save the previous tenant
+		for key, slot in self.card_slots.items():
+			# Check if @position is inside the current slot
+			if (
+				(position[0] >= slot["position"][0] and position[0] <= slot["position"][0] + TILE_SIZE) and
+				(position[1] >= slot["position"][1] and position[1] <= slot["position"][1] + TILE_SIZE)
+			):
+				# Store previous tenant
+				old_entity = slot["id"]
+				# Update new tenant
+				slot["id"] = entity
+				slot["occupied"] = True
+				# Update sprite position
+				sprite.rect.x = slot["position"][0]
+				sprite.rect.y = slot["position"][1]
+
+		# Relocate the previous tenant to its new home
+		if old_entity != -1 and old_home != "-1":
+			self.card_slots[old_home]["id"] = old_entity
+			self.card_slots[old_home]["occupied"] = True
+			old_sprite = world.component_for_entity( old_entity, Pipe )
+			old_sprite.rect.x = self.card_slots[old_home]["position"][0]
+			old_sprite.rect.y = self.card_slots[old_home]["position"][1]
 
 	def remove(self, entity):
 		if entity in self.current_hand:
