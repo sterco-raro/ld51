@@ -130,6 +130,8 @@ PLAYER_COOLDOWN_BOMB 	= 1000
 PLAYER_DURATION_ATTACK 	= 500
 PLAYER_DURATION_HURT 	= 500
 
+# Audio
+GAME_OST = "sounds/ld51fuckmeonmydeathbed.mp3"
 
 SOUNDS = [
 	"button_downup.wav",

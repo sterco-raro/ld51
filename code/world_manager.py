@@ -51,6 +51,7 @@ class WorldManager():
 		self.current = "demo"
 		self.worlds[self.current] = self._load_world(self.current)
 		time.sleep(0.2)
+		pygame.mixer.music.rewind()
 		esper.dispatch_event("scene_change", self.current)
 
 	def on_game_continue(self):

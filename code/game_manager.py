@@ -28,6 +28,8 @@ class GameManager():
 
 		self.sounds = {}
 
+		self.music = None
+
 		# Register event handlers
 		esper.set_handler("quit_to_desktop", self.on_game_quit)
 		esper.set_handler("on_play_sound", self.on_play_sound)
@@ -96,6 +98,9 @@ class GameManager():
 		for file_name in SOUNDS:
 			self.sounds[ file_name.split(".")[0] ] = pygame.mixer.Sound(os.path.join("sounds", file_name))
 
+		# Load the game theme
+		pygame.mixer.music.load( GAME_OST, "mp3" )
+
 		# Start game loop
 		self.running = True
 
@@ -146,6 +151,8 @@ class GameManager():
 
 	def run(self):
 		"""Game loop"""
+
+		pygame.mixer.music.play()
 
 		while self.running:
 			# General event handler
