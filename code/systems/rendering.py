@@ -98,7 +98,7 @@ class Rendering(Processor):
 			self.canvas.blit( sprite.image, sprite.rect )
 
 			if sprite.selected:
-				selected = self.deck.interactable_area.collidepoint( sprite.rect.center )
+				selected = self.deck.interactable_area.collidepoint( sprite.rect.center ) or self.grid.interactable_area.collidepoint( sprite.rect.center )
 				pygame.draw.rect( self.canvas, (0, 255, 0), sprite.rect, width = 3 )
 			elif self.debug:
 				pygame.draw.rect( self.canvas, sprite.debug_color, sprite.rect, width=1 )
@@ -138,13 +138,6 @@ class Rendering(Processor):
 
 		# Draw mouse cursor
 		self.canvas.blit( self.cursor.image, self.cursor.rect )
-
-		# # TODO TMP
-		# if self.debug:
-		# 	text = "({}, {}) => D: {} G: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery, self.deck.get_slot(self.cursor.rect.center), self.grid.get(self.cursor.rect.center))
-		# 	text_surface = self.font.render(text, True, (255, 255, 255))
-		# 	self.canvas.blit( text_surface, text_surface.get_rect( center = ( 400, 32 ) ) )
-		# # TODO TMP
 
 		# Stop map surfaces construction once done
 		if self.redraw_map: self.redraw_map = False

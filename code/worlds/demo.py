@@ -33,24 +33,27 @@ def create_grid(world, grid_width, grid_height):
 	world.add_component( tilemap, tilemap_data )
 
 	# Build map structure
-	tilemap_data.level[0][2] = PIPE_INPUT
-	tilemap_data.inputs.append((0,2))
-	tilemap_data.level[1][2] = PIPE_VERTICAL
-	tilemap_data.level[0][5] = PIPE_INPUT
-	tilemap_data.inputs.append((0,5))
-	tilemap_data.level[1][5] = PIPE_T_LEFT
-	tilemap_data.level[0][7] = PIPE_INPUT
-	tilemap_data.inputs.append((0,7))
-	tilemap_data.level[1][7] = PIPE_VERTICAL
-	tilemap_data.level[grid_height - 1][1] = PIPE_OUTPUT
-	tilemap_data.outputs.append((grid_height - 1,1))
-	tilemap_data.level[grid_height - 2][1] = PIPE_BENT_RIGHT_DOWN
-	tilemap_data.level[grid_height - 1][4] = PIPE_OUTPUT
-	tilemap_data.outputs.append((grid_height - 1,4))
-	tilemap_data.level[grid_height - 2][4] = PIPE_BENT_LEFT_DOWN
-	tilemap_data.level[grid_height - 1][6] = PIPE_OUTPUT
-	tilemap_data.outputs.append((grid_height - 1,6))
-	tilemap_data.level[grid_height - 2][6] = PIPE_VERTICAL
+	quantity_in = random.randint(1, 4)
+	quantity_out = random.randint(3, 5)
+
+	allowed_pipes_up = [ PIPE_VERTICAL, PIPE_VERTICAL, PIPE_VERTICAL, PIPE_T_LEFT, PIPE_T_RIGHT, PIPE_BENT_LEFT_UP, PIPE_BENT_LEFT_UP ]
+	allowed_pipes_down = [ PIPE_VERTICAL, PIPE_VERTICAL, PIPE_VERTICAL, PIPE_T_LEFT, PIPE_T_RIGHT, PIPE_BENT_LEFT_DOWN, PIPE_BENT_LEFT_DOWN ]
+
+	for i in range(quantity_in):
+		choice = random.randint(1, 8)
+		while tilemap_data.level[0][choice] != "-1":
+			choice = random.randint(1, 8)
+		tilemap_data.level[0][choice] = PIPE_INPUT
+		tilemap_data.level[1][choice] = random.choice(allowed_pipes_up)
+		tilemap_data.inputs.append((0,choice))
+
+	for i in range(quantity_out):
+		choice = random.randint(1, 8)
+		while tilemap_data.level[0][choice] != "-1":
+			choice = random.randint(1, 8)
+		tilemap_data.level[grid_height - 1][choice] = PIPE_OUTPUT
+		tilemap_data.level[grid_height - 2][choice] = random.choice(allowed_pipes_down)
+		tilemap_data.outputs.append((grid_height - 1,choice))
 
 	# Create components for the base map
 	for row in range(grid_height):
