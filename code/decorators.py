@@ -2,7 +2,7 @@ import time
 from functools import wraps
 from contextlib import contextmanager
 
-from code.settings import PROFILING_FILE
+from code.settings import DEBUG, PROFILING_FILE
 
 
 # -------------------------------------------------------------------------------------------------
@@ -20,10 +20,11 @@ def exectime(routine):
 		# Build data string
 		data = "EXECTIME: {}.{} => {} seconds".format(routine.__module__, routine.__qualname__, end - start)
 		# Write results to a file
-		if PROFILING_FILE and PROFILING_FILE != "":
-			print(data, file=PROFILING_FILE)
-		else:
-			print(data)
+		if DEBUG:
+			if PROFILING_FILE and PROFILING_FILE != "":
+				print(data, file=PROFILING_FILE)
+			else:
+				print(data)
 		return ret
 
 	return wrapper

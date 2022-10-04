@@ -6,6 +6,18 @@ from code.settings import GRAPHICS_FOLDER
 # -------------------------------------------------------------------------------------------------
 
 
+def resource_path(relative_path):
+	try:
+		# PyInstaller creates a temp folder and stores path in _MEIPASS
+	    base_path = sys._MEIPASS
+	except Exception:
+		base_path = os.path.abspath(".")
+	return os.path.join( base_path, relative_path )
+
+
+# -------------------------------------------------------------------------------------------------
+
+
 def import_folder(path, size):
 	"""Load all images in the given @path. Slightly modified version of ClearCode Sproutland tutorial code (yt)"""
 
@@ -37,8 +49,9 @@ def import_folder(path, size):
 def load_image(name):
 	"""Load image and return image object"""
 	fullname = os.path.join(GRAPHICS_FOLDER, name)
+	asset_url = resource_path(fullname)
 	try:
-		image = pygame.image.load(fullname)
+		image = pygame.image.load(asset_url)
 		if image.get_alpha is None: image = image.convert()
 		else:                       image = image.convert_alpha()
 	except pygame.error as message:

@@ -41,8 +41,9 @@ class GameManager():
 		"""Clean exit"""
 		self.world.quit()
 		self.running = False
-		if not PROFILING_FILE.closed:
-			PROFILING_FILE.close()
+		if self.debug:
+			if not PROFILING_FILE.closed:
+				PROFILING_FILE.close()
 		time.sleep(0.5)
 
 	def on_play_sound(self, name, loops=0):

@@ -16,7 +16,10 @@ SCREEN_MODE_FLAGS = pygame.DOUBLEBUF
 
 PROFILING_MODE = "w+"
 PROFILING_PATH = "profiling.txt"
-PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
+if DEBUG:
+	PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
+else:
+	PROFILING_FILE = ""
 
 # Resources
 GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "graphics")

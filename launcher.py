@@ -7,9 +7,6 @@
 #
 
 
-print("\nWARNING: BAD AT WORK\n")
-
-
 try:
 	import sys
 	import pygame
