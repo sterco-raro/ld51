@@ -84,7 +84,11 @@ class MenuRendering(esper.Processor):
 		for ent, surface in self.world.get_component(UiSurface):
 			self.surface.blit(surface.image, surface.rect)
 
-		# Layer 1: buttons (images with state management)
+		# Layer 1: images (logos, icons)
+		for ent, image in self.world.get_component(UiImage):
+			self.surface.blit(image.image, image.rect)
+
+		# Layer 2: buttons (images with state management)
 		color = None
 		for ent, button in self.world.get_component(UiButton):
 			if button.image:
@@ -92,10 +96,6 @@ class MenuRendering(esper.Processor):
 			else:
 				color = button.inactive_color if not button.hovering else button.active_color
 				pygame.draw.rect(self.surface, color, button.rect)
-
-		# Layer 2: images (logos, icons)
-		for ent, image in self.world.get_component(UiImage):
-			self.surface.blit(image.image, image.rect)
 
 		# Layer 3: text surfaces (header, buttons text)
 		for ent, text in self.world.get_component(UiText):

@@ -1,5 +1,6 @@
 import esper
 import pygame
+from code.settings import *
 from code.systems.ui import MenuInputHandler, MenuRendering
 from code.components.ui import UiButton, UiCursor, UiImage, UiItem, UiSurface, UiText
 
@@ -30,29 +31,32 @@ def load(file_name):
 	logo = world.create_entity()
 	button_1 = world.create_entity()
 	# button_2 = world.create_entity()
-	button_3 = world.create_entity()
+	# button_3 = world.create_entity()
 	# icon_btn_left = world.create_entity()
 	# icon_btn_right = world.create_entity()
 
 	# Components
-	cursor_comp = UiCursor( file_name="menu_cursor.png" )
+	cursor_comp = UiCursor( file_name=SPRITE_CURSOR )
 	cursor_comp.rect.center = (screen_size[0]/2, screen_size[1]/2)
 	world.add_component( cursor, cursor_comp )
 
-	world.add_component( background, UiSurface( color=(220, 200, 80), size=screen_size ) )
+	world.add_component( background, UiImage( file_name=MENU_BACKGROUND, size=(screen_size[0], screen_size[1]) ) )
 
-	text = "LD 51"
-	text_surface = font.render(text, True, (0, 0, 0))
-	text_rect = text_surface.get_rect( center = (screen_size[0]/2, screen_size[1]/4) )
-	world.add_component( logo, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size,  ) )
+	# text = "Pipe Nightmare"
+	# text_surface = font.render(text, True, (0, 0, 0))
+	# text_rect = text_surface.get_rect( center = (screen_size[0]/2, screen_size[1]/4) )
+	# world.add_component( logo, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size,  ) )
+	image = UiImage( file_name=LOGO, size=(295, 200) )
+	image.rect.center = (screen_size[0]/2, screen_size[1]/4)
+	world.add_component( logo, image )
 
 	text = "New Game"
 	text_size = font.size(text)
-	height = text_size[1] + 40 + 15
+	height = text_size[1] + 180#+ 40 + 15
 	text_surface = font.render(text, True, (255, 255, 255))
-	text_rect = text_surface.get_rect( center = (screen_size[0]/2, screen_size[1]/2 + height) )
-	image = UiButton( rect=pygame.Rect( text_rect.x - 20, text_rect.y - 20, text_rect.w + 40, text_rect.h + 40 ) )
-	image.rect.center = ( screen_size[0]/2, screen_size[1]/2 + height )
+	text_rect = text_surface.get_rect( center = (screen_size[0]//2, screen_size[1]//2 + height) )
+	image = UiButton( rect=pygame.Rect( text_rect.x - 10, text_rect.y - 10, text_rect.w + 20, text_rect.h + 20 ) )
+	image.rect.center = ( screen_size[0]//2, screen_size[1]//2 + height )
 	world.add_component( button_1, image )
 	world.add_component( button_1, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size ) )
 	world.add_component( button_1, UiItem( rect=image.rect, callback=lambda: esper.dispatch_event("game_new") ) )
@@ -68,16 +72,16 @@ def load(file_name):
 	# world.add_component( button_2, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size ) )
 	# world.add_component( button_2, UiItem( rect=image.rect, callback=lambda: esper.dispatch_event("game_continue") ) )
 
-	text = "Exit"
-	text_size = font.size(text)
-	height = (text_size[1] + 40 + 15) * 2#* 3
-	text_surface = font.render(text, True, (255, 255, 255))
-	text_rect = text_surface.get_rect( center = (screen_size[0]/2, screen_size[1]/2 + height) )
-	image = UiButton( rect=pygame.Rect( text_rect.x - 20, text_rect.y - 20, text_rect.w + 40, text_rect.h + 40 ) )
-	image.rect.center = ( screen_size[0]/2, screen_size[1]/2 + height )
-	world.add_component( button_3, image )
-	world.add_component( button_3, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size ) )
-	world.add_component( button_3, UiItem( rect=image.rect, callback=lambda: esper.dispatch_event("quit_to_desktop") ) )
+	# text = "Exit"
+	# text_size = font.size(text)
+	# height = (text_size[1] + 40 + 15) * 2#* 3
+	# text_surface = font.render(text, True, (255, 255, 255))
+	# text_rect = text_surface.get_rect( center = (screen_size[0]/2, screen_size[1]/2 + height) )
+	# image = UiButton( rect=pygame.Rect( text_rect.x - 20, text_rect.y - 20, text_rect.w + 40, text_rect.h + 40 ) )
+	# image.rect.center = ( screen_size[0]/2, screen_size[1]/2 + height )
+	# world.add_component( button_3, image )
+	# world.add_component( button_3, UiText( text=text, surface=text_surface, rect=text_rect, size=font_size ) )
+	# world.add_component( button_3, UiItem( rect=image.rect, callback=lambda: esper.dispatch_event("quit_to_desktop") ) )
 
 	# x = margin
 	# y = screen_size[1] - margin

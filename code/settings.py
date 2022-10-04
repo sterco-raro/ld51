@@ -21,6 +21,9 @@ PROFILING_FILE = open(PROFILING_PATH, PROFILING_MODE)
 # Resources
 GRAPHICS_FOLDER = os.path.join(pathlib.Path(__file__).parent.resolve().parent, "graphics")
 
+LOGO			 			= "logo.png"
+MENU_BACKGROUND 			= "menu_bg.png"
+
 SPRITE_UNKNOWN 				= "unknown.png"
 SPRITE_CURSOR 				= "cursors/hand_point.png"
 SPRITE_CURSOR_OPEN			= "cursors/hand_open.png"

@@ -121,15 +121,6 @@ class Rendering(Processor):
 		for ent, text in self.world.get_component( UiText ):
 			self.canvas.blit( text.surface, text.rect )
 
-		# Draw timer
-		text = str(self.timer.value)
-		text_size = self.font.size( text )
-		text_surface = self.font.render( text, True, (255, 255, 255) )
-		x = ( self.screen_size[0] - self.grid.width - TILE_SIZE )
-		y = text_size[1] - text_size[1]//4
-		text_rect = text_surface.get_rect( center = (x, y) )
-		self.canvas.blit( text_surface, text_rect )
-
 		# Draw any animated sprite
 		for ent, sprite in self.world.get_component( AnimatedSprite ):
 			self.canvas.blit( sprite.image, sprite.rect )
