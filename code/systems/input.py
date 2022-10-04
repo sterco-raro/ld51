@@ -30,7 +30,7 @@ class MouseInputHandler(Processor):
 		self.selected_sprite 	= None
 
 		# Actions cooldown
-		self.actions_cooldown = Timer( duration = 100 )
+		self.actions_cooldown = Timer( duration = 200 )
 
 		# Event handlers
 		set_handler("reset_deck_hand", self.on_reset_deck_hand)
@@ -266,6 +266,7 @@ class MouseInputHandler(Processor):
 				if mouse_right:
 					dispatch_event( "on_play_sound", "pipe_rotate" )
 					sprite.rotate()
+					self.grid.set( self.cursor.rect.center, sprite.pipe_id )
 					self._clear_selection()
 					self.actions_cooldown.activate()
 

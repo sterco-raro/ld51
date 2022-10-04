@@ -41,6 +41,18 @@ class Pipe(StaticSprite):
 		self.original = self.image
 		self.angle = 0.0
 
+	def _update_pipe_id_after_rotation(self, changes):
+		# Update pipe_id according to @changes
+		for key, pipe in PIPES.items():
+			if (
+				changes[0] == PIPES[key]["left"] 	and
+				changes[1] == PIPES[key]["up"] 		and
+				changes[2] == PIPES[key]["right"] 	and
+				changes[3] == PIPES[key]["down"]
+			):
+				self.pipe_id = PIPES[key]["id"]
+				break
+
 	def rotate(self):
 		self.angle -= 90.0
 		if self.angle <= -360.0:
@@ -59,6 +71,7 @@ class Pipe(StaticSprite):
 		self.up 	= up
 		self.right 	= right
 		self.down 	= down
+		self._update_pipe_id_after_rotation((left, up, right, down))
 
 
 # -------------------------------------------------------------------------------------------------

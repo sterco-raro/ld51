@@ -20,11 +20,9 @@ class TimerController(Processor):
 		self.grid 	= None
 
 		# End timer cooldown
-		self.cooldown = Timer( 3200 )
-
+		self.cooldown = Timer( 2000 )
 
 		self.status = ""
-		self.first_run = True
 
 	def _check_error(self, pos, direction_from):
 		if self.status == "error":
@@ -113,10 +111,8 @@ class TimerController(Processor):
 		# Activate a small cooldown to handle events when the timer has reached its end
 		if self.timer.value >= 10:
 			self.cooldown.activate()
-			if not self.first_run:
-				dispatch_event( "on_play_sound", "rattleflush" )
-				self.grid_healthcheck()
-			self.first_run = False
+			dispatch_event( "on_play_sound", "rattleflush" )
+			self.grid_healthcheck()
 
 		# Update timers
 		self.timer.update()
@@ -125,7 +121,6 @@ class TimerController(Processor):
 		# Keep the timer inactive while the cooldown is still running
 		if not self.cooldown.active:
 			if not self.timer.active:
-				if not self.first_run:
-					dispatch_event( "on_play_sound", "weird" )
-					self.prepare_flush()
+				dispatch_event( "on_play_sound", "weird" )
+				self.prepare_flush()
 				self.timer.activate()
