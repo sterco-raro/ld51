@@ -46,7 +46,8 @@ class Rendering(Processor):
 
 		# Event handlers
 		set_handler( "scene_change", self.on_scene_change )
-		set_handler( "toggle_debug", self.on_toggle_debug )
+		if self.debug:
+			set_handler( "toggle_debug", self.on_toggle_debug )
 
 	def on_scene_change(self, name):
 		"""Notify the need to update this menu UI"""
@@ -129,7 +130,8 @@ class Rendering(Processor):
 
 		# Show the grid element under the cursor
 		if self.debug:
-			text = "({}, {}) => Deck: {}, Grid: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery,
+			text = "({}, {}) => Deck: {}, Grid: {}".format( self.cursor.rect.centerx // TILE_SIZE - self.grid.offset_x // TILE_SIZE,
+															self.cursor.rect.centery // TILE_SIZE - self.grid.offset_y // TILE_SIZE,
 															self.deck.get_slot(self.cursor.rect.center),
 															self.grid.get(self.cursor.rect.center) )
 			text_surface = self.font.render(text, True, (255, 255, 255))

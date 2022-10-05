@@ -33,7 +33,7 @@ class MouseInputHandler(Processor):
 		self.actions_cooldown = Timer( duration = 200 )
 
 		# Event handlers
-		set_handler("reset_deck_hand", self.on_reset_deck_hand)
+		set_handler( "reset_deck_hand", self.on_reset_deck_hand )
 		set_handler( "healthcheck_error", self.on_healthcheck_error )
 
 	def _clear_selection(self):
@@ -303,8 +303,6 @@ class MouseInputHandler(Processor):
 				# Reset selection
 				self._clear_selection()
 				self.actions_cooldown.activate()
-
-				print("Pipe placed")
 
 	def process(self):
 		if not self.cursor:
