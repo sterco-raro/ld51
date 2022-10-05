@@ -199,6 +199,7 @@ class MouseInputHandler(Processor):
 		mouse_left = False
 		mouse_right = False
 
+		# TODO shouldn't check every pipe sprite
 		for ent, sprite in self.world.get_component( Pipe ):
 
 			# Mouse buttons state
@@ -302,6 +303,8 @@ class MouseInputHandler(Processor):
 				# Reset selection
 				self._clear_selection()
 				self.actions_cooldown.activate()
+
+				print("Pipe placed")
 
 	def process(self):
 		if not self.cursor:

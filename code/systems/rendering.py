@@ -74,7 +74,7 @@ class Rendering(Processor):
 		self.canvas.blit(self.background, (0, 0))
 
 		# Grid
-		self.canvas.blit( self.grid_background, (self.grid.offset_x, self.grid.offset_y), self.grid.area )
+		self.canvas.blit( self.grid_background, (self.grid.offset_x, self.grid.offset_y), pygame.Rect( 0, 0, self.grid.width, self.grid.height ) )
 		if self.debug:
 			pygame.draw.rect( self.canvas, (0, 0, 255), self.grid.interactable_area, width = 5 )
 			for row in range( self.grid.map_height ):

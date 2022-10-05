@@ -92,7 +92,7 @@ class PipeMap:
 		self.height = self.map_height * TILE_SIZE
 
 		# Sections rectangles for rendering and input purposes
-		self.area = pygame.Rect( 0, 0, self.width, self.height )
+		self.area = pygame.Rect( self.offset_x, self.offset_y, self.width, self.height )
 		self.interactable_area = pygame.Rect( 	self.offset_x + TILE_SIZE,
 												self.offset_y + TILE_SIZE,
 												self.width - 2 * TILE_SIZE,
