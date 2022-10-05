@@ -124,7 +124,7 @@ class GameManager():
 				# 	self.reset()
 
 				# Toggle debug
-				if ev.key == pygame.K_k:
+				if DEBUG and ev.key == pygame.K_k:
 					self.debug = not self.debug
 					esper.dispatch_event("toggle_debug", self.debug)
 

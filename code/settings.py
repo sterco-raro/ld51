@@ -2,7 +2,7 @@ import os
 import pathlib
 import pygame
 
-DEBUG = False
+DEBUG = True
 
 # General
 GAME_NAME 		= "LD 51"
