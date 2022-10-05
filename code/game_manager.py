@@ -123,10 +123,10 @@ class GameManager():
 				# if ev.key == pygame.K_r:
 				# 	self.reset()
 
-				# # Toggle debug
-				# if ev.key == pygame.K_k:
-				# 	self.debug = not self.debug
-				# 	esper.dispatch_event("toggle_debug", self.debug)
+				# Toggle debug
+				if ev.key == pygame.K_k:
+					self.debug = not self.debug
+					esper.dispatch_event("toggle_debug", self.debug)
 
 				# # Reset world manager
 				# if ev.key == pygame.K_0:

@@ -127,6 +127,14 @@ class Rendering(Processor):
 			if self.debug:
 				pygame.draw.rect( self.canvas, sprite.debug_color, sprite.rect, width=3 )
 
+		# Show the grid element under the cursor
+		if self.debug:
+			text = "({}, {}) => Deck: {}, Grid: {}".format( self.cursor.rect.centerx, self.cursor.rect.centery,
+															self.deck.get_slot(self.cursor.rect.center),
+															self.grid.get(self.cursor.rect.center) )
+			text_surface = self.font.render(text, True, (255, 255, 255))
+			self.canvas.blit( text_surface, text_surface.get_rect( center = (400, 32) ) )
+
 		# Draw mouse cursor
 		self.canvas.blit( self.cursor.image, self.cursor.rect )
 
