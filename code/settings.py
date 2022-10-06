@@ -2,7 +2,7 @@ import os
 import pathlib
 import pygame
 
-DEBUG = True
+DEBUG = False
 
 # General
 GAME_NAME 		= "LD 51"
@@ -154,3 +154,5 @@ SOUNDS = [
 	"snap.wav",
 	"weird.wav",
 ]
+
+EV_SOUND_END = pygame.constants.USEREVENT

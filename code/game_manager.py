@@ -47,8 +47,11 @@ class GameManager():
 		time.sleep(0.5)
 
 	def on_play_sound(self, name, loops=0):
-		if name in self.sounds.keys():
-			self.sounds[name].play(loops=loops)
+		if name in self.sounds.keys() and not self.sounds[name]["running"]:
+			index = list(self.sounds.keys()).index(name)
+			channel = self.sounds[name]["data"].play(loops=loops)
+			channel.set_endevent(EV_SOUND_END + index)
+			self.sounds[name]["running"] = True
 
 	def show_splash_screen(self):
 		"""Quick and dirty splash screen"""
@@ -97,10 +100,14 @@ class GameManager():
 		# Setup sounds
 		self.sounds = {}
 		for file_name in SOUNDS:
-			self.sounds[ file_name.split(".")[0] ] = pygame.mixer.Sound(os.path.join("sounds", file_name))
+			self.sounds[ file_name.split(".")[0] ] = {
+				"running": False,
+				"data": pygame.mixer.Sound(os.path.join("sounds", file_name))
+			}
 
 		# Load the game theme
 		pygame.mixer.music.load( GAME_OST, "mp3" )
+		pygame.mixer.music.set_volume(0.75)
 
 		# Start game loop
 		self.running = True
@@ -116,6 +123,12 @@ class GameManager():
 				self.running = False
 				return
 
+			# pygame.mixer.Channel endevent
+			keys = list(self.sounds.keys())
+			for i in range(len(keys)):
+				if ev.type == EV_SOUND_END + i:
+					self.sounds[keys[i]]["running"] = False
+
 			# Debugging keys
 			if ev.type == pygame.KEYDOWN:
 
@@ -123,10 +136,10 @@ class GameManager():
 				# if ev.key == pygame.K_r:
 				# 	self.reset()
 
-				# Toggle debug
-				if DEBUG and ev.key == pygame.K_k:
-					self.debug = not self.debug
-					esper.dispatch_event("toggle_debug", self.debug)
+				# # Toggle debug
+				# if DEBUG and ev.key == pygame.K_k:
+				# 	self.debug = not self.debug
+				# 	esper.dispatch_event("toggle_debug", self.debug)
 
 				# # Reset world manager
 				# if ev.key == pygame.K_0:
@@ -147,14 +160,12 @@ class GameManager():
 				# Change scenes
 				if ev.key == pygame.K_ESCAPE:
 					pygame.mixer.music.rewind()
-					# self.world.set_active("main_menu")
 					self.world.reset()
-				# if ev.key == pygame.K_p:
-				# 	self.world.set_active("demo")
 
 	def run(self):
 		"""Game loop"""
 
+		# Infinite loop music
 		pygame.mixer.music.play( loops = -1 )
 
 		while self.running:

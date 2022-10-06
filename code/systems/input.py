@@ -52,12 +52,22 @@ class MouseInputHandler(Processor):
 		self._clear_selection()
 
 	def on_healthcheck_error(self, grid_position, direction_from):
-		entity = self.world.create_entity()
-
+		# Translate position from grid coords to screen coords (pixels)
 		x = (grid_position[1] * TILE_SIZE + self.grid.offset_x + TILE_SIZE) - TILE_SIZE//2
 		y = (grid_position[0] * TILE_SIZE + self.grid.offset_y + TILE_SIZE) - TILE_SIZE//2
 
-		# rotate sprite following @direction_from
+		# Check if there's already an animation running in the target cell
+		for ent, sprite in self.world.get_component( AnimatedSprite ):
+			if (
+				(x >= sprite.rect.x and x <= sprite.rect.x + sprite.rect.width) and
+				(y >= sprite.rect.y and y <= sprite.rect.y + sprite.rect.width)
+			):
+				return
+
+		# Create an AnimatedSprite in @grid_position
+		entity = self.world.create_entity()
+
+		# Rotate sprite following @direction_from
 		angle = None
 		if direction_from == "up": angle = 0.0
 		if direction_from == "right": angle = -90.0

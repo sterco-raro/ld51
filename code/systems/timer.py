@@ -40,19 +40,6 @@ class TimerController(Processor):
 		dispatch_event( "healthcheck_error", grid_pos, direction_from )
 		return "failure"
 
-
-
-
-	# TODO
-	# TODO Avoid spawning the same sound more than once
-	# TODO Multiple AnimatedSprite on the same tile
-	# TODO Avoid flushing sound when system is connected correctly
-	# TODO
-
-
-
-
-
 	def _healthcheck(self, grid_pos, direction_from):
 
 		# Get current grid value
@@ -60,7 +47,6 @@ class TimerController(Processor):
 
 		# Location already visited: loop detected
 		if self.navigation_map[grid_pos[1]][grid_pos[0]]:
-			print("LOOP DETECTED")
 			return "failure"
 
 		# New location
@@ -81,19 +67,21 @@ class TimerController(Processor):
 			(direction_from == "right" 	and not PIPES[value]["left"]) 	or
 			(direction_from == "down" 	and not PIPES[value]["up"])
 		):
-			print("missing connection")
 			return self._failure( grid_pos, direction_from, value )
 
-		# Check next links
-		if direction_from != "left" and PIPES[value]["right"]:
-			return self._healthcheck( (grid_pos[0], grid_pos[1] + 1), "right" )
-
-		if direction_from != "up" and PIPES[value]["down"]:
-			return self._healthcheck( (grid_pos[0] + 1, grid_pos[1]), "down" )
-
+		# Go left
 		if direction_from != "right" and PIPES[value]["left"]:
 			return self._healthcheck( (grid_pos[0], grid_pos[1] - 1), "left" )
 
+		# Go right
+		if direction_from != "left" and PIPES[value]["right"]:
+			return self._healthcheck( (grid_pos[0], grid_pos[1] + 1), "right" )
+
+		# Go down
+		if direction_from != "up" and PIPES[value]["down"]:
+			return self._healthcheck( (grid_pos[0] + 1, grid_pos[1]), "down" )
+
+		# Go up
 		if direction_from != "down" and PIPES[value]["up"]:
 			return self._healthcheck( (grid_pos[0] - 1, grid_pos[1]), "up" )
 
@@ -111,7 +99,7 @@ class TimerController(Processor):
 		return error
 
 	def prepare_flush(self):
-		# choose a rundom subset of available inputs
+		# Choose a rundom subset of available inputs
 		random_inputs = random.randint(1, len(self.grid.inputs))
 		inputs = []
 		choice = None
@@ -119,7 +107,7 @@ class TimerController(Processor):
 			choice = random.choice(self.grid.inputs)
 			if choice in inputs: continue
 			inputs.append( choice )
-			# show visual cue
+			# Show visual warning
 			entity = self.world.create_entity()
 			x = choice[1] * TILE_SIZE + self.grid.offset_x + TILE_SIZE//2
 			y = choice[0] * TILE_SIZE + self.grid.offset_y + TILE_SIZE//2
@@ -130,7 +118,7 @@ class TimerController(Processor):
 										spawn_point = (x,y),
 										speed = 6 )
 			self.world.add_component( entity, sprite )
-		# store active inputs in the grid
+		# Store active inputs in the grid
 		self.grid.active_inputs = inputs
 
 	def process(self):
@@ -141,7 +129,7 @@ class TimerController(Processor):
 			self.grid = self.world.get_component( PipeMap )[0][1]
 
 		# Activate a small cooldown to handle events when the timer has reached its end
-		if self.timer.value >= 5: # TODO CHANGEME BACK TO 10
+		if not self.cooldown.active and self.timer.value >= 10:
 			self.cooldown.activate()
 			dispatch_event( "on_play_sound", "rattleflush" )
 			if not self.grid_healthcheck():
